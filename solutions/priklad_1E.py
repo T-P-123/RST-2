@@ -34,7 +34,7 @@ L_total = 8.0   # m
 x_B = 5.0       # m — pozice podpory B (roller)
 
 # Zatížení (střední hodnoty)
-M0 = 20.0       # kN·m — koncentrovaný moment v x=2m (CCW kladný)
+M0 = 20.0       # kN·m — koncentrovaný moment v x=2m (CW — ve směru hodinových ručiček)
 F = 8.0          # kN — bodová síla v x=3m (dolů)
 q = 15.0         # kN/m — spojité zatížení od x=5m do x=8m (dolů)
 
@@ -57,8 +57,9 @@ def solve_beam(M0, F, q, x_B=5.0, x_F=3.0, x_M0=2.0,
     F_Ax = 0.0  # žádné horizontální zatížení
 
     # ΣM_A = 0 (CCW kladné):
-    # +M0 - F*x_F + F_By*x_B - F_q*x_q_cg = 0
-    F_By = (F * x_F - M0 + F_q * x_q_cg) / x_B
+    # M₀ je CW → vstupuje jako -M0
+    # -M0 - F*x_F + F_By*x_B - F_q*x_q_cg = 0
+    F_By = (F * x_F + M0 + F_q * x_q_cg) / x_B
 
     # ΣFy = 0:
     F_Ay = F + F_q - F_By
@@ -87,9 +88,9 @@ def compute_internal_forces(x_arr, F_Ay, F_Ax, F_By,
         # Ohybový moment
         m = F_Ay * x
 
-        # Koncentrovaný moment v x_M0 (CCW → odečteme)
+        # Koncentrovaný moment v x_M0 (CW → kladný skok v sagging konvenci)
         if x >= x_M0:
-            m -= M0
+            m += M0
 
         # Bodová síla F (dolů = záporná Fy)
         if x >= x_F:
@@ -138,11 +139,11 @@ print(f"Kontroly:")
 sum_Fy = F_Ay + F_By - F - F_q_total
 print(f"  ΣFy = {sum_Fy:.6f} kN (≈ 0)")
 
-sum_MA = M0 - F * x_F + F_By * x_B - F_q_total * x_q_cg
+sum_MA = -M0 - F * x_F + F_By * x_B - F_q_total * x_q_cg
 print(f"  ΣM_A = {sum_MA:.6f} kN·m (≈ 0)")
 
 # Kontrola ΣM_B
-sum_MB_cross = (0 - x_B) * F_Ay + M0 + (x_F - x_B) * (-F) + (x_q_cg - x_B) * (-F_q_total)
+sum_MB_cross = (0 - x_B) * F_Ay - M0 + (x_F - x_B) * (-F) + (x_q_cg - x_B) * (-F_q_total)
 print(f"  ΣM_B = {sum_MB_cross:.6f} kN·m (≈ 0)")
 
 # Výpočet průběhů
@@ -163,9 +164,9 @@ print(f"  M_min = {np.min(M_det):.2f} kN·m")
 # Klíčové body M diagramu
 print(f"\n  M(0) = {M_det[0]:.2f} kN·m (pin → M=0)")
 print(f"  M(2⁻) ≈ {F_Ay * 2:.2f} kN·m")
-print(f"  M(2⁺) ≈ {F_Ay * 2 - M0:.2f} kN·m (skok -M₀)")
-print(f"  M(3) = {F_Ay * 3 - M0:.2f} kN·m")
-print(f"  M(5) = {F_Ay * 5 - M0 - F * 2:.2f} kN·m")
+print(f"  M(2⁺) ≈ {F_Ay * 2 + M0:.2f} kN·m (skok +M₀, CW moment)")
+print(f"  M(3) = {F_Ay * 3 + M0:.2f} kN·m")
+print(f"  M(5) = {F_Ay * 5 + M0 - F * 2:.2f} kN·m")
 
 # ============================================================
 # 2. STOCHASTICKÁ ANALÝZA — Monte Carlo

@@ -4,8 +4,8 @@ Příklad 1E — Průběh vnitřních sil a momentů na nosníku
 Prostě podepřený nosník s převislým koncem.
 
 Podpory:
-  - A (x=0): kloubová podpora (pin) — reakce V_A, H_A
-  - B (x=5m): válcová podpora (roller) — reakce V_B
+  - A (x=0): kloubová podpora (pin) — reakce F_Ax, F_Ay
+  - B (x=5m): válcová podpora (roller) — reakce F_By
   (kolečko u x=2m je jen místo aplikace momentu, NE vnitřní kloub!)
 
 Zatížení:
@@ -48,25 +48,25 @@ def solve_beam(M0, F, q, x_B=5.0, x_F=3.0, x_M0=2.0,
                x_q_start=5.0, x_q_end=8.0):
     """
     Prostě podepřený nosník: pin v A (x=0), roller v B (x=x_B).
-    3 neznámé (V_A, H_A, V_B), 3 rovnice rovnováhy.
+    3 neznámé (F_Ay, F_Ax, F_By), 3 rovnice rovnováhy.
     """
     L_q = x_q_end - x_q_start
     F_q = q * L_q
     x_q_cg = x_q_start + L_q / 2
 
-    H_A = 0.0  # žádné horizontální zatížení
+    F_Ax = 0.0  # žádné horizontální zatížení
 
     # ΣM_A = 0 (CCW kladné):
-    # +M0 - F*x_F + V_B*x_B - F_q*x_q_cg = 0
-    V_B = (F * x_F - M0 + F_q * x_q_cg) / x_B
+    # +M0 - F*x_F + F_By*x_B - F_q*x_q_cg = 0
+    F_By = (F * x_F - M0 + F_q * x_q_cg) / x_B
 
     # ΣFy = 0:
-    V_A = F + F_q - V_B
+    F_Ay = F + F_q - F_By
 
-    return V_A, H_A, V_B
+    return F_Ay, F_Ax, F_By
 
 
-def compute_internal_forces(x_arr, V_A, H_A, V_B,
+def compute_internal_forces(x_arr, F_Ay, F_Ax, F_By,
                              M0, F, q, x_M0=2.0, x_B=5.0, x_F=3.0,
                              x_q_start=5.0, x_q_end=8.0):
     """
@@ -83,9 +83,9 @@ def compute_internal_forces(x_arr, V_A, H_A, V_B,
         n = 0.0
 
         # Posouvající síla — součet svislých sil nalevo od řezu
-        v = V_A
+        v = F_Ay
         # Ohybový moment
-        m = V_A * x
+        m = F_Ay * x
 
         # Koncentrovaný moment v x_M0 (CCW → odečteme)
         if x >= x_M0:
@@ -98,8 +98,8 @@ def compute_internal_forces(x_arr, V_A, H_A, V_B,
 
         # Podpora B
         if x >= x_B:
-            v += V_B
-            m += V_B * (x - x_B)
+            v += F_By
+            m += F_By * (x - x_B)
 
         # Spojité zatížení (dolů = záporná Fy)
         if x > x_q_start:
@@ -116,7 +116,7 @@ def compute_internal_forces(x_arr, V_A, H_A, V_B,
 
 
 # Deterministické řešení
-V_A, H_A, V_B = solve_beam(M0, F, q)
+F_Ay, F_Ax, F_By = solve_beam(M0, F, q)
 
 print("=" * 60)
 print("PŘÍKLAD 1E — DETERMINISTICKÉ ŘEŠENÍ")
@@ -125,9 +125,9 @@ print(f"Podpora A (x=0): kloubová (pin)")
 print(f"Podpora B (x=5): válcová (roller)")
 print(f"Moment 20 kN·m v x=2m, síla 8 kN v x=3m, q=15 kN/m na [5,8]m")
 print(f"\nReakce:")
-print(f"  V_A = {V_A:.2f} kN")
-print(f"  H_A = {H_A:.2f} kN")
-print(f"  V_B = {V_B:.2f} kN")
+print(f"  F_Ay = {F_Ay:.2f} kN")
+print(f"  F_Ax = {F_Ax:.2f} kN")
+print(f"  F_By = {F_By:.2f} kN")
 print()
 
 # Kontrola
@@ -135,19 +135,19 @@ F_q_total = q * (x_q_end - x_q_start)
 x_q_cg = x_q_start + (x_q_end - x_q_start) / 2
 
 print(f"Kontroly:")
-sum_Fy = V_A + V_B - F - F_q_total
+sum_Fy = F_Ay + F_By - F - F_q_total
 print(f"  ΣFy = {sum_Fy:.6f} kN (≈ 0)")
 
-sum_MA = M0 - F * x_F + V_B * x_B - F_q_total * x_q_cg
+sum_MA = M0 - F * x_F + F_By * x_B - F_q_total * x_q_cg
 print(f"  ΣM_A = {sum_MA:.6f} kN·m (≈ 0)")
 
 # Kontrola ΣM_B
-sum_MB_cross = (0 - x_B) * V_A + M0 + (x_F - x_B) * (-F) + (x_q_cg - x_B) * (-F_q_total)
+sum_MB_cross = (0 - x_B) * F_Ay + M0 + (x_F - x_B) * (-F) + (x_q_cg - x_B) * (-F_q_total)
 print(f"  ΣM_B = {sum_MB_cross:.6f} kN·m (≈ 0)")
 
 # Výpočet průběhů
 x = np.linspace(0, L_total, 2000)
-N_det, V_det, M_det = compute_internal_forces(x, V_A, H_A, V_B, M0, F, q)
+N_det, V_det, M_det = compute_internal_forces(x, F_Ay, F_Ax, F_By, M0, F, q)
 
 # Kontrola M na volném konci
 print(f"  M(8) = {M_det[-1]:.6f} kN·m (≈ 0 — volný konec)")
@@ -162,10 +162,10 @@ print(f"  M_min = {np.min(M_det):.2f} kN·m")
 
 # Klíčové body M diagramu
 print(f"\n  M(0) = {M_det[0]:.2f} kN·m (pin → M=0)")
-print(f"  M(2⁻) ≈ {V_A * 2:.2f} kN·m")
-print(f"  M(2⁺) ≈ {V_A * 2 - M0:.2f} kN·m (skok -M₀)")
-print(f"  M(3) = {V_A * 3 - M0:.2f} kN·m")
-print(f"  M(5) = {V_A * 5 - M0 - F * 2:.2f} kN·m")
+print(f"  M(2⁻) ≈ {F_Ay * 2:.2f} kN·m")
+print(f"  M(2⁺) ≈ {F_Ay * 2 - M0:.2f} kN·m (skok -M₀)")
+print(f"  M(3) = {F_Ay * 3 - M0:.2f} kN·m")
+print(f"  M(5) = {F_Ay * 5 - M0 - F * 2:.2f} kN·m")
 
 # ============================================================
 # 2. STOCHASTICKÁ ANALÝZA — Monte Carlo
@@ -179,13 +179,13 @@ M0_samples = np.random.normal(M0, M0 * CoV, N_sim)
 F_samples = np.random.normal(F, F * CoV, N_sim)
 q_samples = np.random.normal(q, q * CoV, N_sim)
 
-V_A_mc = np.zeros(N_sim)
-V_B_mc = np.zeros(N_sim)
+F_Ay_mc = np.zeros(N_sim)
+F_By_mc = np.zeros(N_sim)
 
 for i in range(N_sim):
     va, ha, vb = solve_beam(M0_samples[i], F_samples[i], q_samples[i])
-    V_A_mc[i] = va
-    V_B_mc[i] = vb
+    F_Ay_mc[i] = va
+    F_By_mc[i] = vb
 
 # Obálky průběhů
 N_plot = 1000
@@ -207,10 +207,10 @@ for i in range(N_plot):
 print("\n" + "=" * 60)
 print(f"STOCHASTICKÁ ANALÝZA (Monte Carlo, N={N_sim:,})")
 print("=" * 60)
-print(f"V_A:  μ = {np.mean(V_A_mc):.2f} kN,  σ = {np.std(V_A_mc):.2f} kN,  "
-      f"CoV = {np.std(V_A_mc)/abs(np.mean(V_A_mc)):.4f}")
-print(f"V_B:  μ = {np.mean(V_B_mc):.2f} kN,  σ = {np.std(V_B_mc):.2f} kN,  "
-      f"CoV = {np.std(V_B_mc)/abs(np.mean(V_B_mc)):.4f}")
+print(f"F_Ay:  μ = {np.mean(F_Ay_mc):.2f} kN,  σ = {np.std(F_Ay_mc):.2f} kN,  "
+      f"CoV = {np.std(F_Ay_mc)/abs(np.mean(F_Ay_mc)):.4f}")
+print(f"F_By:  μ = {np.mean(F_By_mc):.2f} kN,  σ = {np.std(F_By_mc):.2f} kN,  "
+      f"CoV = {np.std(F_By_mc)/abs(np.mean(F_By_mc)):.4f}")
 
 # ============================================================
 # 3. GRAFY
@@ -277,16 +277,16 @@ fig2, axes2 = plt.subplots(1, 2, figsize=(12, 5))
 fig2.suptitle('Příklad 1E — Histogramy reakcí (Monte Carlo)',
               fontsize=13, fontweight='bold')
 
-axes2[0].hist(V_A_mc, bins=80, density=True, alpha=0.7, color='steelblue', edgecolor='white')
-axes2[0].axvline(V_A, color='red', linewidth=2, linestyle='--', label=f'Determin. = {V_A:.2f}')
-axes2[0].set_xlabel('V_A [kN]')
-axes2[0].set_title('Reakce V_A')
+axes2[0].hist(F_Ay_mc, bins=80, density=True, alpha=0.7, color='steelblue', edgecolor='white')
+axes2[0].axvline(F_Ay, color='red', linewidth=2, linestyle='--', label=f'Determin. = {F_Ay:.2f}')
+axes2[0].set_xlabel('F_Ay [kN]')
+axes2[0].set_title('Reakce F_Ay')
 axes2[0].legend()
 
-axes2[1].hist(V_B_mc, bins=80, density=True, alpha=0.7, color='steelblue', edgecolor='white')
-axes2[1].axvline(V_B, color='red', linewidth=2, linestyle='--', label=f'Determin. = {V_B:.2f}')
-axes2[1].set_xlabel('V_B [kN]')
-axes2[1].set_title('Reakce V_B')
+axes2[1].hist(F_By_mc, bins=80, density=True, alpha=0.7, color='steelblue', edgecolor='white')
+axes2[1].axvline(F_By, color='red', linewidth=2, linestyle='--', label=f'Determin. = {F_By:.2f}')
+axes2[1].set_xlabel('F_By [kN]')
+axes2[1].set_title('Reakce F_By')
 axes2[1].legend()
 
 plt.tight_layout()

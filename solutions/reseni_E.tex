@@ -1,0 +1,620 @@
+\documentclass[a4paper,11pt]{article}
+
+% Kódování a jazyk
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[czech]{babel}
+\usepackage{lmodern}
+
+% Matematika
+\usepackage{amsmath,amssymb,amsfonts}
+
+% Grafika a layout
+\usepackage{graphicx}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!60!black
+}
+
+% Záhlaví
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small RST -- Řešení příkladů E}
+\fancyhead[R]{\small Akademický rok 2025/2026}
+\fancyfoot[C]{\thepage}
+
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Vlastní příkazy
+\newcommand{\unit}[1]{\,\mathrm{#1}}
+\newcommand{\E}[1]{\times 10^{#1}}
+
+\title{%
+    \vspace{-1cm}
+    \textbf{Rizika a spolehlivost technických systémů}\\[0.3cm]
+    \Large Řešení příkladů -- varianta E\\[0.2cm]
+    \large Akademický rok 2025/2026
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\tableofcontents
+\newpage
+
+%% ============================================================
+%% PŘÍKLAD 1E
+%% ============================================================
+\section{Příklad 1E -- Průběh vnitřních sil a momentů na nosníku}
+
+\subsection{Zadání}
+
+Vykreslete průběh vnitřních sil a momentů po délce prutu. Vnější zatížení uvažujte jako stochastické s~normálním rozdělením, střední hodnotou dle obrázku a~variačním koeficientem $\mathrm{CoV} = 0{,}1$.
+
+\medskip\noindent
+\textbf{Schéma nosníku:}
+\begin{itemize}[nosep]
+    \item Podpora $A$ ($x=0$): vetknutí (reakce $V_A$, $H_A$, $M_A$)
+    \item Vnitřní kloub v~$x = 2\unit{m}$ (podmínka $M = 0$)
+    \item Podpora $B$ ($x = 5\unit{m}$): válcová podpora (reakce $V_B$)
+    \item Koncentrovaný moment $M_0 = 20\unit{kN \cdot m}$ v~$x = 2\unit{m}$
+    \item Bodová síla $F = 8\unit{kN}$ v~$x = 3\unit{m}$ (směr dolů)
+    \item Spojité zatížení $q = 15\unit{kN/m}$ na intervalu $x \in [5; 8]\unit{m}$
+    \item Celková délka: $L = 2 + 1 + 2 + 3 = 8\unit{m}$
+\end{itemize}
+
+\subsection{Deterministické řešení}
+
+\subsubsection{Statická určitost}
+
+Nosník má 4 neznámé reakce ($V_A$, $H_A$, $M_A$, $V_B$) a~4 podmínky rovnováhy (3 rovnice rovnováhy + 1 podmínka kloubu), je tedy \textbf{staticky určitý}.
+
+\subsubsection{Výpočet reakcí}
+
+Celková síla od spojitého zatížení:
+\begin{equation}
+    F_q = q \cdot L_q = 15 \cdot 3 = 45\unit{kN}, \quad x_{F_q} = 5 + \frac{3}{2} = 6{,}5\unit{m}
+\end{equation}
+
+\noindent\textbf{Podmínka kloubu} (moment nalevo od kloubu $= 0$):
+\begin{equation}
+    M_A + V_A \cdot x_{\mathrm{kloub}} = 0 \quad \Rightarrow \quad M_A = -2\,V_A
+    \label{eq:hinge}
+\end{equation}
+
+\noindent\textbf{Momentová rovnováha k bodu $A$} ($\sum M_A = 0$):
+\begin{equation}
+    M_A + M_0 - F \cdot x_F - F_q \cdot x_{F_q} + V_B \cdot x_B = 0
+\end{equation}
+\begin{equation}
+    M_A + 20 - 8 \cdot 3 - 45 \cdot 6{,}5 + 5\,V_B = 0
+\end{equation}
+
+Dosazením \eqref{eq:hinge} a~rovnice $\sum F_y = 0$: $V_A = F + F_q - V_B$:
+\begin{equation}
+    V_B \cdot (x_{\mathrm{kloub}} + x_B) = F \cdot x_{\mathrm{kloub}} + F_q \cdot x_{\mathrm{kloub}} - M_0 + F \cdot x_F + F_q \cdot x_{F_q}
+\end{equation}
+\begin{equation}
+    V_B \cdot 7 = 8 \cdot 2 + 45 \cdot 2 - 20 + 8 \cdot 3 + 45 \cdot 6{,}5 = 402{,}5
+\end{equation}
+
+\begin{equation}
+    \boxed{V_B = 57{,}50\unit{kN}}
+\end{equation}
+\begin{equation}
+    V_A = 8 + 45 - 57{,}50 = \boxed{-4{,}50\unit{kN}}
+\end{equation}
+\begin{equation}
+    M_A = -2 \cdot (-4{,}50) = \boxed{9{,}00\unit{kN \cdot m}}
+\end{equation}
+\begin{equation}
+    H_A = 0\unit{kN}
+\end{equation}
+
+\subsubsection{Kontrola rovnováhy}
+
+\begin{align}
+    \sum F_y &= V_A + V_B - F - F_q = -4{,}50 + 57{,}50 - 8 - 45 = 0 \quad \checkmark \\
+    \sum M_A &= 9 + 20 - 24 - 292{,}5 + 287{,}5 = 0 \quad \checkmark \\
+    M(x_{\mathrm{kloub}}) &= 9 + (-4{,}50) \cdot 2 = 0 \quad \checkmark
+\end{align}
+
+\subsubsection{Klíčové hodnoty průběhů}
+
+\begin{table}[H]
+\centering
+\caption{Klíčové hodnoty vnitřních sil}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Veličina} & \textbf{Hodnota} & \textbf{Pozice} \\
+\midrule
+$V_{\max}$ & $44{,}96\unit{kN}$ & u~podpory $B$ \\
+$M_{\max}$ & $58{,}00\unit{kN \cdot m}$ & v~oblasti za $B$ \\
+$M_{\min}$ & $-9{,}48\unit{kN \cdot m}$ & blízko $A$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Stochastická analýza}
+
+Vstupní veličiny $M_0$, $F$, $q$ mají normální rozdělení:
+\begin{equation}
+    M_0 \sim N(20;\; 2), \quad F \sim N(8;\; 0{,}8), \quad q \sim N(15;\; 1{,}5)
+\end{equation}
+kde $\sigma = \mu \cdot \mathrm{CoV} = \mu \cdot 0{,}1$.
+
+Metodou \textbf{Monte Carlo} ($N = 100\,000$ realizací) byly získány statistiky reakcí:
+
+\begin{table}[H]
+\centering
+\caption{Statistiky reakcí -- Monte Carlo simulace}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Reakce} & $\boldsymbol{\mu}$ & $\boldsymbol{\sigma}$ & \textbf{CoV} \\
+\midrule
+$V_A$ [kN] & $-4{,}50$ & $1{,}03$ & $0{,}229$ \\
+$M_A$ [kN$\cdot$m] & $9{,}00$ & $2{,}06$ & $0{,}229$ \\
+$V_B$ [kN] & $57{,}49$ & $5{,}50$ & $0{,}096$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{priklad_1E_diagram.png}
+\caption{Průběh vnitřních sil $N(x)$, $V(x)$, $M(x)$ -- deterministický průběh se stochastickým obalem}
+\label{fig:1E_diagram}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{priklad_1E_histogramy.png}
+\caption{Histogramy reakcí z Monte Carlo simulace ($N = 100\,000$)}
+\label{fig:1E_hist}
+\end{figure}
+
+\newpage
+%% ============================================================
+%% PŘÍKLAD 2E
+%% ============================================================
+\section{Příklad 2E -- Osový kvadratický moment Z-profilu}
+
+\subsection{Zadání}
+
+U~tělesa podle obrázku určete osový kvadratický moment k~ose $x$ a~$y$. Střední hodnoty rozměrů jsou uvedeny na obrázku, variační koeficient je $\mathrm{CoV} = 0{,}2$. Stochastické veličiny popisujte normálním rozdělením.
+
+\subsection{Geometrie průřezu}
+
+Z-profil (nerovnoramenný úhelník) se skládá ze 3 obdélníkových částí:
+
+\begin{table}[H]
+\centering
+\caption{Rozměry a polohy dílčích obdélníků}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Část} & $b_i$ [mm] & $h_i$ [mm] & $x_{C,i}$ [mm] & $y_{C,i}$ [mm] \\
+\midrule
+Dolní příruba & 200 & 30 & 100{,}0 & 15{,}0 \\
+Stojina & 30 & 140 & 15{,}0 & 100{,}0 \\
+Horní příruba & 100 & 30 & $-20{,}0$ & 185{,}0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Počátek souřadného systému je v~levém dolním rohu dolní příruby.
+
+\subsection{Deterministické řešení}
+
+\subsubsection{Plocha průřezu}
+
+\begin{equation}
+    A = \sum A_i = 200 \cdot 30 + 30 \cdot 140 + 100 \cdot 30 = 6000 + 4200 + 3000 = \boxed{13\,200\unit{mm^2}}
+\end{equation}
+
+\subsubsection{Těžiště}
+
+\begin{equation}
+    x_C = \frac{\sum A_i \cdot x_{C,i}}{A} = \frac{6000 \cdot 100 + 4200 \cdot 15 + 3000 \cdot (-20)}{13\,200} = \frac{603\,000}{13\,200} = \boxed{45{,}68\unit{mm}}
+\end{equation}
+
+\begin{equation}
+    y_C = \frac{\sum A_i \cdot y_{C,i}}{A} = \frac{6000 \cdot 15 + 4200 \cdot 100 + 3000 \cdot 185}{13\,200} = \frac{1\,065\,000}{13\,200} = \boxed{80{,}68\unit{mm}}
+\end{equation}
+
+\subsubsection{Osové kvadratické momenty (Steinerova věta)}
+
+\begin{equation}
+    I_x = \sum \left( \frac{b_i h_i^3}{12} + A_i \cdot (y_{C,i} - y_C)^2 \right)
+\end{equation}
+
+\begin{align}
+    I_{x,1} &= \frac{200 \cdot 30^3}{12} + 6000 \cdot (15 - 80{,}68)^2 = 450\,000 + 25\,895\,574 = 26\,345\,574 \\
+    I_{x,2} &= \frac{30 \cdot 140^3}{12} + 4200 \cdot (100 - 80{,}68)^2 = 6\,860\,000 + 1\,568\,290 = 8\,428\,290 \\
+    I_{x,3} &= \frac{100 \cdot 30^3}{12} + 3000 \cdot (185 - 80{,}68)^2 = 225\,000 + 32\,635\,000 = 32\,860\,000
+\end{align}
+
+\begin{equation}
+    \boxed{I_x = 67{,}63 \E{6}\unit{mm^4}}
+\end{equation}
+
+Analogicky pro $I_y$:
+\begin{equation}
+    I_y = \sum \left( \frac{b_i^3 h_i}{12} + A_i \cdot (x_{C,i} - x_C)^2 \right) = \boxed{57{,}41 \E{6}\unit{mm^4}}
+\end{equation}
+
+\subsection{Stochastická analýza}
+
+Všech 6 rozměrů ($b$ a~$h$ každé části) má normální rozdělení s~$\mathrm{CoV} = 0{,}2$. Monte Carlo simulace ($N = 100\,000$):
+
+\begin{table}[H]
+\centering
+\caption{Statistiky kvadratických momentů}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Veličina} & $\boldsymbol{\mu}$ & $\boldsymbol{\sigma}$ & \textbf{CoV} & \textbf{95\% CI} \\
+\midrule
+$I_x$ [$\E{6}$ mm$^4$] & 69{,}19 & 28{,}80 & 0{,}416 & $[24{,}9;\; 135{,}9]$ \\
+$I_y$ [$\E{6}$ mm$^4$] & 69{,}11 & 34{,}52 & 0{,}500 & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Poznámka:} CoV výstupních veličin ($\approx 0{,}4$--$0{,}5$) je výrazně vyšší než vstupní CoV ($0{,}2$), protože $I_x$ závisí na rozměrech ve třetí mocnině (zesílení nejistoty).
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{priklad_2E_profil.png}
+    \caption{Geometrie průřezu s~těžištěm}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{priklad_2E_histogramy.png}
+    \caption{Histogramy $I_x$ a $I_y$}
+\end{subfigure}
+\caption{Příklad 2E -- Z-profil}
+\end{figure}
+
+\newpage
+%% ============================================================
+%% PŘÍKLAD 3E
+%% ============================================================
+\section{Příklad 3E -- Pravděpodobnost bezporuchového provozu klínových řemenů}
+
+\subsection{Zadání}
+
+V~klínových řemenech byla zjištěna provozní napětí $S$ [MPa] a~meze pevnosti $R$ [MPa]:
+
+\medskip
+\noindent\textbf{Provozní napětí $S$} ($n = 10$): 223; 116; 158{,}5; 199; 136{,}5; 169{,}5; 267{,}5; 127; 184; 151
+
+\noindent\textbf{Mez pevnosti $R$} ($n = 12$): 211; 269{,}5; 192; 301{,}5; 220{,}5; 243{,}5; 182{,}5; 257; 234; 199{,}5; 216; 205
+
+\medskip
+\noindent Jaká je pravděpodobnost bezporuchového provozu?
+
+\subsection{Statistický popis dat}
+
+\begin{table}[H]
+\centering
+\caption{Základní statistiky naměřených dat}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Veličina} & $\boldsymbol{\bar{x}}$ [MPa] & $\boldsymbol{s}$ [MPa] & \textbf{CoV} & \textbf{Shapiro-Wilk $p$} \\
+\midrule
+Provozní napětí $S$ & 173{,}20 & 46{,}70 & 0{,}270 & 0{,}640 (normální $\checkmark$) \\
+Mez pevnosti $R$ & 227{,}67 & 34{,}95 & 0{,}154 & 0{,}589 (normální $\checkmark$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Shapiro-Wilkův test na hladině $\alpha = 0{,}05$ potvrzuje normalitu obou souborů.
+
+\subsection{Analytický výpočet}
+
+Bezporuchový provoz nastává, když mez pevnosti překoná provozní napětí: $R > S$. Definujeme \textbf{rezervu spolehlivosti}:
+\begin{equation}
+    Z = R - S
+\end{equation}
+
+Jsou-li $R \sim N(\mu_R, \sigma_R)$ a $S \sim N(\mu_S, \sigma_S)$ nezávislé, pak:
+\begin{equation}
+    Z \sim N\!\left(\mu_R - \mu_S,\; \sqrt{\sigma_R^2 + \sigma_S^2}\right)
+\end{equation}
+
+\begin{align}
+    \mu_Z &= 227{,}67 - 173{,}20 = 54{,}47\unit{MPa} \\
+    \sigma_Z &= \sqrt{34{,}95^2 + 46{,}70^2} = 58{,}33\unit{MPa}
+\end{align}
+
+\textbf{Index spolehlivosti:}
+\begin{equation}
+    \beta = \frac{\mu_Z}{\sigma_Z} = \frac{54{,}47}{58{,}33} = \boxed{0{,}934}
+\end{equation}
+
+\textbf{Pravděpodobnost poruchy:}
+\begin{equation}
+    P_f = \Phi(-\beta) = \Phi(-0{,}934) = 0{,}1752 = 17{,}52\%
+\end{equation}
+
+\textbf{Pravděpodobnost bezporuchového provozu:}
+\begin{equation}
+    \boxed{P_s = 1 - P_f = 0{,}8248 = 82{,}48\%}
+\end{equation}
+
+\subsection{Monte Carlo simulace}
+
+Simulace s~$N = 1\,000\,000$ realizací potvrzuje analytický výsledek:
+
+\begin{table}[H]
+\centering
+\caption{Srovnání metod výpočtu}
+\begin{tabular}{lc}
+\toprule
+\textbf{Metoda} & $\boldsymbol{P_s}$ [\%] \\
+\midrule
+Analyticky (normální) & 82{,}48 \\
+Monte Carlo (normální) & 82{,}45 \\
+Monte Carlo (log-normální) & 83{,}39 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{priklad_3E_vysledky.png}
+\caption{Příklad 3E -- Rozdělení $S$, $R$, rezerva $Z$, QQ ploty}
+\label{fig:3E}
+\end{figure}
+
+\newpage
+%% ============================================================
+%% PŘÍKLAD 4E
+%% ============================================================
+\section{Příklad 4E -- MS pružnosti a deformace součásti s~vrubem}
+
+\subsection{Zadání}
+
+Určete pravděpodobnost dosažení mezního stavu pružnosti a~mezního stavu deformace. Proveďte citlivostní analýzu.
+
+\begin{itemize}[nosep]
+    \item $R_e = 500\unit{MPa}$, $w_{\max} = 2\unit{mm}$, $M = 100\unit{N \cdot m}$
+    \item Tloušťka $t = 15\unit{mm}$
+    \item Celková výška $h = 45\unit{mm}$, hloubka vrubů: $10\unit{mm}$ (horní), $6\unit{mm}$ (dolní)
+    \item Poloměr zaoblení vrubu $r = 3\unit{mm}$
+    \item Stochastické veličiny: log-normální rozdělení, $\mathrm{CoV} = 0{,}1$
+\end{itemize}
+
+\subsection{Deterministické řešení}
+
+\subsubsection{Geometrie v~místě vrubu}
+
+Čistá výška v~místě vrubu:
+\begin{equation}
+    h_{\mathrm{net}} = h - 10 - 6 = 45 - 16 = 29\unit{mm}
+\end{equation}
+
+Průřezový modul a~moment setrvačnosti (obdélníkový průřez):
+\begin{align}
+    W_{\mathrm{net}} &= \frac{t \cdot h_{\mathrm{net}}^2}{6} = \frac{15 \cdot 29^2}{6} = 2\,102{,}5\unit{mm^3} \\
+    I_{\mathrm{net}} &= \frac{t \cdot h_{\mathrm{net}}^3}{12} = \frac{15 \cdot 29^3}{12} = 30\,486\unit{mm^4}
+\end{align}
+
+\subsubsection{Součinitel koncentrace napětí}
+
+Neuberova aproximace pro vrub hloubky $a = 10\unit{mm}$ a~poloměru $r = 3\unit{mm}$:
+\begin{equation}
+    K_t = 1 + 2\sqrt{\frac{a}{r}} = 1 + 2\sqrt{\frac{10}{3}} = \boxed{4{,}651}
+\end{equation}
+
+\subsubsection{Napětí a průhyb}
+
+\begin{align}
+    \sigma_{\mathrm{nom}} &= \frac{M}{W_{\mathrm{net}}} = \frac{100\,000}{2\,102{,}5} = 47{,}56\unit{MPa} \\
+    \sigma_{\max} &= K_t \cdot \sigma_{\mathrm{nom}} = 4{,}651 \cdot 47{,}56 = \boxed{221{,}2\unit{MPa}}
+\end{align}
+
+Součinitel bezpečnosti k~MS pružnosti:
+\begin{equation}
+    k = \frac{R_e}{\sigma_{\max}} = \frac{500}{221{,}2} = \boxed{2{,}26}
+\end{equation}
+
+Průhyb konzoly ($L \approx 100\unit{mm}$):
+\begin{equation}
+    w = \frac{M \cdot L^2}{2 \cdot E \cdot I_{\mathrm{net}}} = \frac{100\,000 \cdot 100^2}{2 \cdot 210\,000 \cdot 30\,486} = 0{,}078\unit{mm} \ll w_{\max} = 2\unit{mm}
+\end{equation}
+
+\subsection{Stochastická analýza (Monte Carlo)}
+
+Všechny vstupní veličiny mají log-normální rozdělení s~$\mathrm{CoV} = 0{,}1$. Simulace $N = 500\,000$:
+
+\subsubsection{MS pružnosti: $g_1 = R_e - \sigma_{\max} > 0$}
+
+\begin{equation}
+    P(\text{porucha MS pružnosti}) = P(\sigma_{\max} > R_e) = \boxed{0{,}14\%}
+\end{equation}
+\begin{equation}
+    \beta_{\mathrm{yield}} \approx 2{,}99
+\end{equation}
+
+\subsubsection{MS deformace: $g_2 = w_{\max} - w > 0$}
+
+\begin{equation}
+    P(\text{porucha MS deformace}) \approx \boxed{0\%} \quad (\text{žádná porucha v~500\,000 realizacích})
+\end{equation}
+
+Průhyb je o~řád menší než dovolená hodnota, MS deformace tedy není kritický.
+
+\subsection{Citlivostní analýza}
+
+\begin{table}[H]
+\centering
+\caption{Faktory důležitosti (importance factors) pro MS pružnosti}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Veličina} & $\boldsymbol{\rho}(g_1, X_i)$ & $\boldsymbol{\alpha_i^2}$ [\%] \\
+\midrule
+$R_e$ & $+0{,}654$ & \textbf{43{,}9} \\
+$h_{\mathrm{net}}$ & $+0{,}594$ & \textbf{36{,}2} \\
+$M$ & $-0{,}300$ & 9{,}3 \\
+$t$ & $+0{,}299$ & 9{,}2 \\
+$r$ & $+0{,}119$ & 1{,}4 \\
+$L$ & $+0{,}000$ & 0{,}0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Závěr citlivostní analýzy:} Dominantní vliv má mez kluzu $R_e$ (44\%) a~výška průřezu v~místě vrubu $h_{\mathrm{net}}$ (36\%). Pro zvýšení spolehlivosti je nejúčinnější snížit variabilitu těchto dvou veličin.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{priklad_4E_vysledky.png}
+\caption{Příklad 4E -- MS pružnosti a deformace, citlivostní analýza}
+\label{fig:4E}
+\end{figure}
+
+\newpage
+%% ============================================================
+%% PŘÍKLAD 5E
+%% ============================================================
+\section{Příklad 5E -- Časový průběh napětí ve vrubech}
+
+\subsection{Zadání}
+
+Součást se dvěma zápichy, na jedné straně přivařena k~základnímu rámu, na druhé straně se ho dotýká. Je zatížena souměrně střídavou silou. Stanovte časový průběh napětí ve vrubech.
+
+\begin{itemize}[nosep]
+    \item Všechny rozměry $\pm 0{,}5\unit{mm}$
+    \item $F = +1000 \div 0\unit{N}$ (pulzující zatížení)
+    \item Hlavní průměr $D = 50\unit{mm}$, průměr v~zápichu $d = 35\unit{mm}$
+    \item Poloměr zápichu $r = 5\unit{mm}$
+    \item Délka $L = 500\unit{mm}$
+    \item Předpětí $F_0 = 1{,}4 \times 10^5\unit{N}$
+\end{itemize}
+
+\subsection{Deterministické řešení}
+
+\subsubsection{Geometrie zápichu}
+
+\begin{align}
+    A_d &= \frac{\pi d^2}{4} = \frac{\pi \cdot 35^2}{4} = 962{,}1\unit{mm^2} \\
+    t_{\mathrm{depth}} &= \frac{D - d}{2} = \frac{50 - 35}{2} = 7{,}5\unit{mm}
+\end{align}
+
+\subsubsection{Součinitel koncentrace napětí}
+
+Neuberova aproximace:
+\begin{equation}
+    K_t = 1 + 2\sqrt{\frac{t_{\mathrm{depth}}}{r}} = 1 + 2\sqrt{\frac{7{,}5}{5}} = \boxed{3{,}449}
+\end{equation}
+
+\subsubsection{Napětí bez předpětí}
+
+\begin{align}
+    \sigma_{\mathrm{nom,max}} &= \frac{F_{\max}}{A_d} = \frac{1000}{962{,}1} = 1{,}039\unit{MPa} \\
+    \sigma_{\max} &= K_t \cdot \sigma_{\mathrm{nom,max}} = 3{,}449 \cdot 1{,}039 = \boxed{3{,}585\unit{MPa}} \\
+    \sigma_{\min} &= 0\unit{MPa} \quad (\text{pulzující, } R = 0)
+\end{align}
+
+Střední napětí a~amplituda:
+\begin{align}
+    \sigma_m &= \frac{\sigma_{\max} + \sigma_{\min}}{2} = 1{,}793\unit{MPa} \\
+    \sigma_a &= \frac{\sigma_{\max} - \sigma_{\min}}{2} = 1{,}793\unit{MPa}
+\end{align}
+
+\subsubsection{Napětí s~předpětím}
+
+\begin{align}
+    \sigma_{\max} &= K_t \cdot \frac{F_0 + F_{\max}}{A_d} = 3{,}449 \cdot \frac{141\,000}{962{,}1} = \boxed{505{,}5\unit{MPa}} \\
+    \sigma_{\min} &= K_t \cdot \frac{F_0}{A_d} = 3{,}449 \cdot \frac{140\,000}{962{,}1} = 501{,}9\unit{MPa} \\
+    \sigma_m &= 503{,}7\unit{MPa}, \quad \sigma_a = 1{,}79\unit{MPa}
+\end{align}
+
+\subsection{Časový průběh}
+
+Pro pulzující zatížení $F(t) = \frac{F_{\max}}{2}\left(1 - \cos 2\pi f t\right)$:
+
+\begin{equation}
+    \sigma(t) = K_t \cdot \frac{F(t)}{A_d} = \frac{K_t \cdot F_{\max}}{2 A_d}\left(1 - \cos 2\pi f t\right)
+\end{equation}
+
+Napětí harmonicky kmitá mezi $0$ a~$\sigma_{\max}$ s~poměrem asymetrie $R = 0$.
+
+\subsection{Stochastická analýza}
+
+Rozměry s~tolerancí $\pm 0{,}5\unit{mm}$ $\Rightarrow$ $\sigma_{\mathrm{dim}} = 0{,}5/3 \approx 0{,}167\unit{mm}$ (pravidlo $3\sigma$).
+
+\begin{table}[H]
+\centering
+\caption{Statistiky napětí ve vrubech ($N = 100\,000$)}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Veličina} & $\boldsymbol{\mu}$ & $\boldsymbol{\sigma}$ & \textbf{CoV} & \textbf{95\% CI} \\
+\midrule
+$\sigma_{\max}$ [MPa] & 3{,}587 & 0{,}192 & 0{,}054 & $[3{,}21;\; 3{,}97]$ \\
+$\sigma_a$ [MPa] & 1{,}793 & 0{,}096 & 0{,}054 & --- \\
+$K_t$ [-] & 3{,}450 & 0{,}045 & 0{,}013 & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Variabilita napětí je nízká ($\mathrm{CoV} = 5{,}4\%$) díky malým tolerancím rozměrů.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{priklad_5E_vysledky.png}
+\caption{Příklad 5E -- Časový průběh síly a~napětí, stochastická analýza}
+\label{fig:5E}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{priklad_5E_haigh.png}
+\caption{Příklad 5E -- Haighův diagram ($\sigma_a$ vs $\sigma_m$) s~Goodmanovou přímkou}
+\label{fig:5E_haigh}
+\end{figure}
+
+\newpage
+%% ============================================================
+%% ZÁVĚR
+%% ============================================================
+\section{Souhrnná tabulka výsledků}
+
+\begin{table}[H]
+\centering
+\caption{Přehled klíčových výsledků všech příkladů E}
+\begin{tabular}{p{2cm}p{5cm}p{5cm}c}
+\toprule
+\textbf{Příklad} & \textbf{Deterministický výsledek} & \textbf{Stochastický výsledek} & \textbf{CoV vstup} \\
+\midrule
+\textbf{1E} & $V_A = -4{,}50\unit{kN}$, $M_A = 9{,}00\unit{kN \cdot m}$, $V_B = 57{,}50\unit{kN}$ & CoV reakcí: $0{,}10$--$0{,}23$ & 0{,}1 \\
+\midrule
+\textbf{2E} & $I_x = 67{,}6\E{6}\unit{mm^4}$, $I_y = 57{,}4\E{6}\unit{mm^4}$ & CoV výstupu: $0{,}42$--$0{,}50$ & 0{,}2 \\
+\midrule
+\textbf{3E} & $\beta = 0{,}934$ & $P_s = 82{,}5\%$ & z dat \\
+\midrule
+\textbf{4E} & $k_{\mathrm{yield}} = 2{,}26$, $K_t = 4{,}65$ & $P_s = 99{,}86\%$, $\beta = 2{,}99$ & 0{,}1 \\
+\midrule
+\textbf{5E} & $\sigma_{\max} = 3{,}59\unit{MPa}$, $K_t = 3{,}45$ & CoV napětí: $0{,}054$ & $\pm 0{,}5\unit{mm}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

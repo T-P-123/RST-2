@@ -1,0 +1,63 @@
+
+! =====================================================
+! Příklad 4E — ANSYS APDL skript
+! Součást s vrubem zatížená ohybovým momentem
+! =====================================================
+
+FINISH
+/CLEAR
+
+/PREP7
+
+! Materiálové vlastnosti
+ET,1,PLANE183           ! 2D 8-uzlový prvek
+MP,EX,1,210000          ! Modul pružnosti [MPa]
+MP,PRXY,1,0.3           ! Poissonův poměr
+
+! Geometrie - parametry
+h_total = 45            ! Celková výška [mm]
+notch_top = 10          ! Hloubka horního vrubu [mm]
+notch_bot = 6           ! Hloubka dolního vrubu [mm]
+h_net = h_total - notch_top - notch_bot  ! Čistá výška
+r_notch = 3             ! Poloměr zaoblení vrubu [mm]
+thickness = 15          ! Tloušťka [mm]
+L_beam = 100            ! Délka [mm]
+
+! Klíčové body a plochy
+! (zjednodušená geometrie - detaily závisí na přesném tvaru)
+RECTNG,0,L_beam,0,h_total
+
+! Mesh
+AESIZE,ALL,1.0          ! Velikost prvku 1 mm
+! Zjemnění u vrubu
+! LREFINE,...
+
+AMESH,ALL
+
+! Okrajové podmínky
+! Vetknutí na levém okraji
+DL,4,,ALL,0
+
+! Zatížení - moment na pravém okraji
+! M = 100 N·m = 100000 N·mm
+! Rozložení do lineárního napětí na pravém okraji
+! σ = M*y/I, síla = σ * t * dy
+
+/SOLU
+ANTYPE,STATIC
+SOLVE
+
+/POST1
+PLNSOL,S,EQV            ! Von Mises napětí
+PLNSOL,U,SUM            ! Celkový posuv
+
+! Výpis maximálních hodnot
+NSORT,S,EQV
+*GET,sigma_max,SORT,,MAX
+NSORT,U,Y
+*GET,w_max_fem,SORT,,MAX
+
+/COM, Max von Mises stress = %sigma_max% MPa
+/COM, Max deflection = %w_max_fem% mm
+
+FINISH

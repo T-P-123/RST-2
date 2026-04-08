@@ -1,18 +1,31 @@
 """
 Příklad 2E — Osový kvadratický moment L-profilu k ose x a y
 ============================================================
-Z-profil (úhelník) s rozměry z obrázku:
-  - Horní příruba: šířka 30mm (vlevo) + 70mm (vpravo) = celkem offset, tloušťka 30mm
-  - Stojina: šířka 30mm, výška 140mm
-  - Dolní příruba: 30mm + 170mm, tloušťka 30mm
+L-profil (rovnoramenný úhelník) s rozměry z obrázku:
 
-Interpretace obrázku (Z-profil / nerovnoramenný úhelník):
-  Profil se skládá ze 3 obdélníků:
-  1. Horní příruba: šířka (30+70)=100mm, výška 30mm, levý okraj na x=-30
-  2. Stojina: šířka 30mm, výška 140mm
-  3. Dolní příruba: šířka (30+170)=200mm, výška 30mm
+Průřez (pohled 2D, počátek v levém dolním rohu):
 
-Souřadný systém: počátek v levém dolním rohu dolní příruby.
+    |30|
+    +--+
+    |  |  ^
+    |  |  | 30 mm (horní část)
+    |  |  |
+    |  +  + - - - - (y=170)
+    |  |  |
+    |  |  | 140 mm (střední část)
+    |  |  |
+    |  |  v
+    +--+--+---------170mm--------+
+    |          30mm               |  30 mm (výška)
+    +--+--+----------------------+
+    |30|
+       ȳ
+
+Rozměry průřezu:
+  - Svislé rameno: šířka 30 mm, celková výška 200 mm (30+140+30)
+  - Vodorovné rameno: celková šířka 200 mm (30+170), výška 30 mm
+  - Sdílený roh: 30 × 30 mm v levém dolním rohu
+  - 70 mm = hloubka 3D tělesa (extruze), neovlivňuje 2D průřez
 
 Stochastické veličiny: normální rozdělení, CoV = 0.2
 """
@@ -25,93 +38,6 @@ import matplotlib.patches as patches
 # 1. DETERMINISTICKÉ ŘEŠENÍ
 # ============================================================
 
-# Rozměry profilu (mm) — interpretace z obrázku 2E
-# Profil (pohled na průřez):
-#
-#         |--30--|--70--|
-#    y'   +------+------+  <- horní příruba, tloušťka 30mm
-#   /     |  30mm       |
-#  /      +--+----------+
-# /       |30|              <- stojina, 30mm × 140mm
-#         |  |   140mm
-#         |  |
-#    +----+--+              <- dolní příruba
-#    | 30 |  | 170mm   |
-#    +----+--+-----------+  tloušťka 30mm
-#    x
-#
-# Počátek v levém dolním rohu celého profilu
-
-# Dolní příruba (rectangle 3)
-b3 = 30.0 + 170.0   # = 200 mm šířka
-h3 = 30.0            # mm výška
-x3_left = 0.0        # levý okraj
-y3_bot = 0.0         # spodní okraj
-
-# Stojina (rectangle 2)
-b2 = 30.0            # mm šířka
-h2 = 140.0           # mm výška
-x2_left = 0.0        # levý okraj (zarovnán s levým okrajem dolní příruby)
-y2_bot = h3           # spodní okraj = horní okraj dolní příruby = 30mm
-
-# Horní příruba (rectangle 1)
-# z obrázku: 30mm vlevo + 70mm vpravo od osy stojiny
-# stojina je 0..30mm, takže horní příruba je od -30 (ne, nemůže být záporné s naším počátkem)
-# Reinterpretace: horní příruba od x=-30 do x=30+70=100?
-# Ale počátek je v levém dolním rohu dolní příruby.
-# Stojina začíná na x=0, tedy osa stojiny je na x=15mm.
-# Horní příruba: 30mm vlevo od levého okraje stojiny to 70mm vpravo od pravého okraje stojiny
-# => od x = 0-30 = -30 do x = 30+70 = 100
-# Ale to by znamenalo záporné x. Zkusím jinou interpretaci.
-
-# Alternativní interpretace z 3D obrázku:
-# Profil je Z-tvar (nebo nerovnoramenný úhelník)
-# Horní příruba je posunuta doleva, dolní doprava
-#
-# Obrázek ukazuje:
-#   y, y' nahoře
-#   30mm — šířka horního ramene vlevo
-#   70mm — výška/šířka horního ramene
-#   30mm — tloušťka
-#   140mm — výška stojiny
-#   C — těžiště
-#   30mm — tloušťka dolní části
-#   30mm, 170mm — rozměry dolní příruby
-#
-# Zjednodušená interpretace jako 3 obdélníky v lokálním souřadném systému:
-
-# Obdélník 1: Horní příruba
-# Šířka = 30 + 70 = 100mm (30 vlevo od stojiny, 70 = šířka stojiny + přesah)
-# Hmm, zpřesním. Podívejme se na obrázek znovu:
-# Nahoře: 30mm (vlevo), 70mm (dole od toho = výška horní části)
-# Vlevo od středu: 30mm šířka
-# 140mm výška střední části
-# Dole: 30mm výška, pak 30mm + 170mm šířky
-
-# Myslím, že správná interpretace je:
-# Profil je "Z" nebo "reversed C":
-# 1) Horní příruba: 100mm × 30mm (30+70=100 šířka, 30 tloušťka)
-#    - umístěna vlevo nahoře
-# 2) Stojina: 30mm × 140mm
-# 3) Dolní příruba: 200mm × 30mm (30+170=200 šířka, 30 tloušťka)
-#    - umístěna vpravo dole
-
-# Celková výška = 30 + 140 + 30 = 200mm
-
-# Souřadný systém: počátek v levém dolním rohu dolní příruby
-# Dolní příruba: x=[0, 200], y=[0, 30]
-# Stojina: x=[0, 30], y=[30, 170]
-# Horní příruba: x=[-70, 30], y=[170, 200]
-#
-# Ale to dává záporné x, což je OK pro výpočet, ale posunu počátek.
-# Posunu vše o 70 doprava:
-# Dolní příruba: x=[70, 270], y=[0, 30]
-# Stojina: x=[70, 100], y=[30, 170]
-# Horní příruba: x=[0, 100], y=[170, 200]
-
-# Hmm, to stále nevypadá správně. Zkusím jiný přístup.
-# Prostě definuju 3 obdélníky svými rozměry a pozicí těžiště.
-
 def compute_section_properties(rectangles):
     """
     Vypočítá těžiště a osové kvadratické momenty složeného průřezu.
@@ -119,8 +45,8 @@ def compute_section_properties(rectangles):
       b = šířka, h = výška, xc,yc = souřadnice těžiště obdélníku
     """
     A_total = 0.0
-    Sx = 0.0  # statický moment k ose x (pro výpočet yc)
-    Sy = 0.0  # statický moment k ose y (pro výpočet xc)
+    Sx = 0.0
+    Sy = 0.0
 
     for b, h, xc, yc in rectangles:
         A = b * h
@@ -131,7 +57,6 @@ def compute_section_properties(rectangles):
     xC = Sy / A_total
     yC = Sx / A_total
 
-    # Steinerova věta: Ix = Σ(Ix_i + A_i * dy_i²)
     Ix = 0.0
     Iy = 0.0
 
@@ -145,54 +70,70 @@ def compute_section_properties(rectangles):
     return A_total, xC, yC, Ix, Iy
 
 
-# Definice profilu — Z-profil
-# Obrázek 2E ukazuje:
-# - Nahoře: rozměry 30mm a 70mm pro horní příruba
-# - Stojina 30mm × 140mm
-# - Dole: 30mm a 170mm
-# - Všechny tloušťky 30mm
+# Rozměry L-profilu
+t = 30.0         # mm — tloušťka obou ramen
+h_total = 200.0  # mm — celková výška svislého ramena (30+140+30)
+b_total = 200.0  # mm — celková šířka vodorovného ramena (30+170)
 
-# Interpretace jako Z-profil:
-# Horní příruba je posunuta vlevo od stojiny
-# Dolní příruba je posunuta vpravo od stojiny
+# Rozklad na 2 nepřekrývající se obdélníky:
+# 1) Vodorovné rameno (celé): b_total × t, těžiště v (b_total/2, t/2)
+# 2) Svislé rameno (nad sdíleným rohem): t × (h_total - t), těžiště v (t/2, t + (h_total-t)/2)
 
-# Referenční bod: levý dolní roh stojiny = (0, 0)
-# Celková výška profilu = 30 + 140 + 30 = 200mm
-
-# Stojina: šířka 30, výška 140, těžiště na (15, 30+70) = (15, 100)
-# Ale celková výška stojiny = 200mm (celý profil)?
-# Ne, stojina je jen střední část = 140mm.
-
-# Dolní příruba: šířka 200mm (30+170), výška 30mm
-# Levý okraj na x=0 (zarovnán se stojinou vlevo)
-# Těžiště: (100, 15)
-
-# Stojina: šířka 30mm, výška 140mm
-# Levý okraj na x=0
-# Těžiště: (15, 30+70) = (15, 100)
-
-# Horní příruba: šířka 100mm (30+70), výška 30mm
-# Pravý okraj zarovnán s pravým okrajem stojiny (x=30)
-# Tedy levý okraj na x = 30-100 = -70
-# Těžiště: (-70+50, 170+15) = (-20, 185)
-
-# Obdélníky: (b, h, xc, yc)
 rects_det = [
-    (200.0, 30.0, 100.0, 15.0),       # Dolní příruba
-    (30.0, 140.0, 15.0, 100.0),        # Stojina
-    (100.0, 30.0, -20.0, 185.0),       # Horní příruba
+    (b_total, t, b_total/2, t/2),                         # Vodorovné rameno: 200×30
+    (t, h_total - t, t/2, t + (h_total - t)/2),           # Svislé rameno (nad rohem): 30×170
 ]
 
 A, xC, yC, Ix, Iy = compute_section_properties(rects_det)
 
 print("=" * 60)
-print("PŘÍKLAD 2E — DETERMINISTICKÉ ŘEŠENÍ")
+print("PŘÍKLAD 2E — DETERMINISTICKÉ ŘEŠENÍ (L-PROFIL)")
 print("=" * 60)
-print(f"Plocha průřezu: A = {A:.0f} mm²")
-print(f"Těžiště: xC = {xC:.2f} mm, yC = {yC:.2f} mm")
-print(f"Osový kvadratický moment:")
-print(f"  Ix = {Ix:.0f} mm⁴ = {Ix/1e6:.4f} × 10⁶ mm⁴")
-print(f"  Iy = {Iy:.0f} mm⁴ = {Iy/1e6:.4f} × 10⁶ mm⁴")
+print(f"\nGeometrie:")
+print(f"  Svislé rameno: {t:.0f} × {h_total:.0f} mm")
+print(f"  Vodorovné rameno: {b_total:.0f} × {t:.0f} mm")
+print(f"  Sdílený roh: {t:.0f} × {t:.0f} mm")
+
+print(f"\nPlocha průřezu:")
+A1 = b_total * t
+A2 = t * (h_total - t)
+print(f"  A₁ (vodorovné) = {b_total} × {t} = {A1:.0f} mm²")
+print(f"  A₂ (svislé nad rohem) = {t} × {h_total - t} = {A2:.0f} mm²")
+print(f"  A = A₁ + A₂ = {A:.0f} mm²")
+
+print(f"\nTěžiště:")
+print(f"  x_C = {xC:.2f} mm")
+print(f"  y_C = {yC:.2f} mm")
+
+print(f"\nOsové kvadratické momenty (Steinerova věta):")
+
+# Podrobný výpočet pro kontrolu
+d1y = t/2 - yC
+d2y = (t + (h_total - t)/2) - yC
+Ix1 = b_total * t**3 / 12 + A1 * d1y**2
+Ix2 = t * (h_total - t)**3 / 12 + A2 * d2y**2
+
+print(f"\n  I_x:")
+print(f"    Ix₁ = {b_total}·{t}³/12 + {A1:.0f}·({t/2:.1f} - {yC:.2f})² "
+      f"= {b_total*t**3/12:.0f} + {A1 * d1y**2:.0f} = {Ix1:.0f} mm⁴")
+print(f"    Ix₂ = {t}·{h_total-t}³/12 + {A2:.0f}·({t + (h_total-t)/2:.1f} - {yC:.2f})² "
+      f"= {t*(h_total-t)**3/12:.0f} + {A2 * d2y**2:.0f} = {Ix2:.0f} mm⁴")
+print(f"    Ix = {Ix1:.0f} + {Ix2:.0f} = {Ix:.0f} mm⁴ = {Ix/1e6:.4f} × 10⁶ mm⁴")
+
+d1x = b_total/2 - xC
+d2x = t/2 - xC
+Iy1 = b_total**3 * t / 12 + A1 * d1x**2
+Iy2 = t**3 * (h_total - t) / 12 + A2 * d2x**2
+
+print(f"\n  I_y:")
+print(f"    Iy₁ = {b_total}³·{t}/12 + {A1:.0f}·({b_total/2:.1f} - {xC:.2f})² "
+      f"= {b_total**3*t/12:.0f} + {A1 * d1x**2:.0f} = {Iy1:.0f} mm⁴")
+print(f"    Iy₂ = {t}³·{h_total-t}/12 + {A2:.0f}·({t/2:.1f} - {xC:.2f})² "
+      f"= {t**3*(h_total-t)/12:.0f} + {A2 * d2x**2:.0f} = {Iy2:.0f} mm⁴")
+print(f"    Iy = {Iy1:.0f} + {Iy2:.0f} = {Iy:.0f} mm⁴ = {Iy/1e6:.4f} × 10⁶ mm⁴")
+
+print(f"\n  *** Ix = {Ix/1e6:.4f} × 10⁶ mm⁴ ***")
+print(f"  *** Iy = {Iy/1e6:.4f} × 10⁶ mm⁴ ***")
 
 # ============================================================
 # 2. STOCHASTICKÁ ANALÝZA — Monte Carlo
@@ -202,22 +143,26 @@ N_sim = 100_000
 CoV = 0.2
 np.random.seed(42)
 
-# Střední hodnoty rozměrů (mm)
+# Střední hodnoty rozměrů L-profilu (mm)
+# Nezávislé rozměry: tloušťka t, šířka vodorovného ramena b_h, výška svislého ramena h_v
+# b_h = 170 mm (přesah za stojinu), h_v_above = 140 mm (výška nad rohem), horní = 30mm
+# Ale protože t, b_total, h_total jsou odvozeny z podrozměrů:
+#   tloušťka t = 30 mm
+#   přesah dolní příruby = 170 mm
+#   výška stojiny nad přírubou = 140 mm
+#   výška horní části = 30 mm
+
 dims_mean = {
-    'b_bottom': 200.0,   # šířka dolní příruby
-    'h_bottom': 30.0,    # výška dolní příruby
-    'b_web': 30.0,       # šířka stojiny
-    'h_web': 140.0,      # výška stojiny
-    'b_top': 100.0,      # šířka horní příruby
-    'h_top': 30.0,       # výška horní příruby
+    't': 30.0,              # tloušťka ramen
+    'overhang_h': 170.0,    # přesah vodorovného ramena (= b_total - t)
+    'h_web': 140.0,         # výška stojiny mezi rameny
+    'h_top': 30.0,          # výška horní části svislého ramena
 }
 
-# Generování vzorků
 samples = {}
 for key, mu in dims_mean.items():
     sigma = mu * CoV
     samples[key] = np.random.normal(mu, sigma, N_sim)
-    # Zajistit kladné rozměry
     samples[key] = np.maximum(samples[key], 1.0)
 
 Ix_mc = np.zeros(N_sim)
@@ -226,18 +171,13 @@ xC_mc = np.zeros(N_sim)
 yC_mc = np.zeros(N_sim)
 
 for i in range(N_sim):
-    b_bot = samples['b_bottom'][i]
-    h_bot = samples['h_bottom'][i]
-    b_web = samples['b_web'][i]
-    h_web = samples['h_web'][i]
-    b_top = samples['b_top'][i]
-    h_top = samples['h_top'][i]
+    ti = samples['t'][i]
+    b_tot_i = ti + samples['overhang_h'][i]     # celková šířka vodorovného ramena
+    h_tot_i = ti + samples['h_web'][i] + samples['h_top'][i]  # celková výška svislého
 
-    # Pozice těžišť obdélníků
     rects = [
-        (b_bot, h_bot, b_bot/2, h_bot/2),                                  # Dolní příruba
-        (b_web, h_web, b_web/2, h_bot + h_web/2),                          # Stojina
-        (b_top, h_top, b_web/2 - b_top/2, h_bot + h_web + h_top/2),       # Horní příruba
+        (b_tot_i, ti, b_tot_i/2, ti/2),                           # Vodorovné rameno
+        (ti, h_tot_i - ti, ti/2, ti + (h_tot_i - ti)/2),          # Svislé rameno (nad rohem)
     ]
     A_i, xC_i, yC_i, Ix_i, Iy_i = compute_section_properties(rects)
     Ix_mc[i] = Ix_i
@@ -245,8 +185,8 @@ for i in range(N_sim):
     xC_mc[i] = xC_i
     yC_mc[i] = yC_i
 
-print("\n" + "=" * 60)
-print("STOCHASTICKÁ ANALÝZA (Monte Carlo, N=100 000, CoV=0.2)")
+print(f"\n{'='*60}")
+print(f"STOCHASTICKÁ ANALÝZA (Monte Carlo, N={N_sim:,}, CoV={CoV})")
 print("=" * 60)
 print(f"Ix: μ = {np.mean(Ix_mc)/1e6:.4f} × 10⁶ mm⁴,  σ = {np.std(Ix_mc)/1e6:.4f} × 10⁶ mm⁴,  "
       f"CoV = {np.std(Ix_mc)/np.mean(Ix_mc):.4f}")
@@ -255,7 +195,6 @@ print(f"Iy: μ = {np.mean(Iy_mc)/1e6:.4f} × 10⁶ mm⁴,  σ = {np.std(Iy_mc)/1
 print(f"xC: μ = {np.mean(xC_mc):.2f} mm,  σ = {np.std(xC_mc):.2f} mm")
 print(f"yC: μ = {np.mean(yC_mc):.2f} mm,  σ = {np.std(yC_mc):.2f} mm")
 
-# Kvantily
 for q_val in [0.025, 0.5, 0.975]:
     print(f"  Ix ({q_val*100:.1f}%) = {np.quantile(Ix_mc, q_val)/1e6:.4f} × 10⁶ mm⁴")
 
@@ -264,8 +203,8 @@ for q_val in [0.025, 0.5, 0.975]:
 # ============================================================
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-fig.suptitle('Příklad 2E — Osové kvadratické momenty Z-profilu\n'
-             '(Monte Carlo, N=100 000, CoV=0.2)', fontsize=13, fontweight='bold')
+fig.suptitle('Příklad 2E — Osové kvadratické momenty L-profilu\n'
+             f'(Monte Carlo, N={N_sim:,}, CoV={CoV})', fontsize=13, fontweight='bold')
 
 axes[0].hist(Ix_mc/1e6, bins=80, density=True, alpha=0.7, color='steelblue', edgecolor='white')
 axes[0].axvline(Ix/1e6, color='red', linewidth=2, linestyle='--',
@@ -291,15 +230,14 @@ plt.close()
 
 # Vizualizace průřezu
 fig2, ax2 = plt.subplots(1, 1, figsize=(8, 8))
-ax2.set_title('Příklad 2E — Průřez Z-profilu', fontsize=13, fontweight='bold')
+ax2.set_title('Příklad 2E — L-profil (úhelník)', fontsize=13, fontweight='bold')
 
 # Obdélníky
-colors = ['#4ECDC4', '#45B7D1', '#96CEB4']
-labels = ['Dolní příruba', 'Stojina', 'Horní příruba']
+colors = ['#4ECDC4', '#45B7D1']
+labels = ['Vodorovné rameno (200×30)', 'Svislé rameno (30×170)']
 rects_draw = [
-    (0, 0, 200, 30),          # Dolní příruba
-    (0, 30, 30, 140),         # Stojina
-    (-70, 170, 100, 30),      # Horní příruba
+    (0, 0, b_total, t),                    # Vodorovné rameno
+    (0, t, t, h_total - t),                # Svislé rameno (nad rohem)
 ]
 for (rx, ry, rw, rh), color, label in zip(rects_draw, colors, labels):
     rect = patches.Rectangle((rx, ry), rw, rh, linewidth=2,
@@ -307,14 +245,36 @@ for (rx, ry, rw, rh), color, label in zip(rects_draw, colors, labels):
     ax2.add_patch(rect)
 
 ax2.plot(xC, yC, 'ro', markersize=10, zorder=5, label=f'Těžiště C ({xC:.1f}, {yC:.1f})')
-ax2.axhline(y=yC, color='red', linestyle=':', alpha=0.5)
-ax2.axvline(x=xC, color='red', linestyle=':', alpha=0.5)
-ax2.set_xlim(-100, 230)
-ax2.set_ylim(-20, 220)
+ax2.axhline(y=yC, color='red', linestyle=':', alpha=0.5, label=f'osa x\' (y={yC:.1f})')
+ax2.axvline(x=xC, color='blue', linestyle=':', alpha=0.5, label=f'osa y\' (x={xC:.1f})')
+
+# Kóty
+ax2.annotate('', xy=(0, -10), xytext=(200, -10),
+             arrowprops=dict(arrowstyle='<->', color='black'))
+ax2.text(100, -18, '200 mm', ha='center', fontsize=9)
+
+ax2.annotate('', xy=(210, 0), xytext=(210, 30),
+             arrowprops=dict(arrowstyle='<->', color='black'))
+ax2.text(225, 15, '30', ha='left', fontsize=9)
+
+ax2.annotate('', xy=(-15, 0), xytext=(-15, 200),
+             arrowprops=dict(arrowstyle='<->', color='black'))
+ax2.text(-20, 100, '200 mm', ha='right', fontsize=9, rotation=90)
+
+ax2.annotate('', xy=(40, 30), xytext=(40, 170),
+             arrowprops=dict(arrowstyle='<->', color='black'))
+ax2.text(45, 100, '140', ha='left', fontsize=9)
+
+ax2.annotate('', xy=(0, 208), xytext=(30, 208),
+             arrowprops=dict(arrowstyle='<->', color='black'))
+ax2.text(15, 215, '30', ha='center', fontsize=9)
+
+ax2.set_xlim(-40, 250)
+ax2.set_ylim(-30, 230)
 ax2.set_aspect('equal')
 ax2.set_xlabel('x [mm]')
 ax2.set_ylabel('y [mm]')
-ax2.legend(loc='upper right')
+ax2.legend(loc='upper right', fontsize=9)
 ax2.grid(True, alpha=0.3)
 
 plt.tight_layout()

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2026.1.9)  8 APR 2026 10:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2026.1.9)  27 APR 2026 21:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -646,10 +646,6 @@ LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 7
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 
-LaTeX Warning: Command \v invalid in math mode on input line 125.
-
-
-
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 12.38004pt, for example:
@@ -659,10 +655,10 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 [3{/usr/local/texlive/2025basic/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/
 local/texlive/2025basic/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
-<priklad_1E_diagram.png, id=246, 1004.0712pt x 852.3042pt>
+<priklad_1E_diagram.png, id=268, 1004.0712pt x 852.3042pt>
 File: priklad_1E_diagram.png Graphic file (type png)
 <use priklad_1E_diagram.png>
-Package pdftex.def Info: priklad_1E_diagram.png  used on input line 173.
+Package pdftex.def Info: priklad_1E_diagram.png  used on input line 188.
 (pdftex.def)             Requested size: 472.31595pt x 400.92116pt.
 
 
@@ -674,10 +670,10 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
 
 [4]
-<priklad_1E_histogramy.png, id=257, 860.013pt x 357.0138pt>
+<priklad_1E_histogramy.png, id=286, 860.013pt x 357.0138pt>
 File: priklad_1E_histogramy.png Graphic file (type png)
 <use priklad_1E_histogramy.png>
-Package pdftex.def Info: priklad_1E_histogramy.png  used on input line 180.
+Package pdftex.def Info: priklad_1E_histogramy.png  used on input line 195.
 (pdftex.def)             Requested size: 472.31595pt x 196.06946pt.
 
 
@@ -698,20 +694,22 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
 
 [6]
-<priklad_2E_profil.png, id=278, 570.4512pt x 515.526pt>
+<priklad_2E_profil.png, id=310, 569.9694pt x 558.888pt>
 File: priklad_2E_profil.png Graphic file (type png)
 <use priklad_2E_profil.png>
-Package pdftex.def Info: priklad_2E_profil.png  used on input line 292.
-(pdftex.def)             Requested size: 226.70963pt x 204.88521pt.
-<priklad_2E_histogramy.png, id=279, 1004.553pt x 427.3566pt>
+Package pdftex.def Info: priklad_2E_profil.png  used on input line 311.
+(pdftex.def)             Requested size: 226.70963pt x 222.30615pt.
+<priklad_2E_histogramy.png, id=311, 1003.1076pt x 427.3566pt>
 File: priklad_2E_histogramy.png Graphic file (type png)
 <use priklad_2E_histogramy.png>
-Package pdftex.def Info: priklad_2E_histogramy.png  used on input line 297.
-(pdftex.def)             Requested size: 226.70963pt x 96.44452pt.
+Package pdftex.def Info: priklad_2E_histogramy.png  used on input line 316.
+(pdftex.def)             Requested size: 226.70963pt x 96.58145pt.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 298.
+(Font)              <10> on input line 317.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 298.
+(Font)              <7> on input line 317.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 317.
 
 
 
@@ -722,10 +720,10 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
 
 [7 <./priklad_2E_profil.png> <./priklad_2E_histogramy.png>]
-<priklad_3E_vysledky.png, id=293, 1004.0712pt x 710.655pt>
+<priklad_3E_vysledky.png, id=328, 1004.0712pt x 710.655pt>
 File: priklad_3E_vysledky.png Graphic file (type png)
 <use priklad_3E_vysledky.png>
-Package pdftex.def Info: priklad_3E_vysledky.png  used on input line 390.
+Package pdftex.def Info: priklad_3E_vysledky.png  used on input line 409.
 (pdftex.def)             Requested size: 472.31595pt x 334.28983pt.
 
 
@@ -747,55 +745,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 [9 <./priklad_3E_vysledky.png>]
 
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 456.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 456.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 456.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\sigma' on input line 456.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 456.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\max' on input line 456.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 456.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 465.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 465.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 465.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\max' on input line 465.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 465.
-
-
-
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 12.38004pt, for example:
@@ -804,10 +753,58 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
 
 [10]
-<priklad_4E_vysledky.png, id=329, 1004.0712pt x 711.1368pt>
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\sigma' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\max' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 502.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 502.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 502.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\max' on input line 502.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 502.
+
+<priklad_4E_vysledky.png, id=360, 1004.0712pt x 711.1368pt>
 File: priklad_4E_vysledky.png Graphic file (type png)
 <use priklad_4E_vysledky.png>
-Package pdftex.def Info: priklad_4E_vysledky.png  used on input line 496.
+Package pdftex.def Info: priklad_4E_vysledky.png  used on input line 533.
 (pdftex.def)             Requested size: 472.31595pt x 334.51646pt.
 
 
@@ -818,7 +815,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
 
-[11 <./priklad_4E_vysledky.png>]
+[11]
 
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -827,16 +824,25 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
 
-[12]
-<priklad_5E_vysledky.png, id=356, 1004.0712pt x 711.1368pt>
+[12 <./priklad_4E_vysledky.png>]
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 12.38004pt, for example:
+(fancyhdr)                \setlength{\headheight}{12.38004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
+
+[13]
+<priklad_5E_vysledky.png, id=394, 1004.0712pt x 711.1368pt>
 File: priklad_5E_vysledky.png Graphic file (type png)
 <use priklad_5E_vysledky.png>
-Package pdftex.def Info: priklad_5E_vysledky.png  used on input line 590.
+Package pdftex.def Info: priklad_5E_vysledky.png  used on input line 627.
 (pdftex.def)             Requested size: 472.31595pt x 334.51646pt.
-<priklad_5E_haigh.png, id=357, 570.4512pt x 425.4294pt>
+<priklad_5E_haigh.png, id=395, 570.4512pt x 425.4294pt>
 File: priklad_5E_haigh.png Graphic file (type png)
 <use priklad_5E_haigh.png>
-Package pdftex.def Info: priklad_5E_haigh.png  used on input line 597.
+Package pdftex.def Info: priklad_5E_haigh.png  used on input line 634.
 (pdftex.def)             Requested size: 307.00247pt x 228.95595pt.
 
 
@@ -847,7 +853,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
 
-[13 <./priklad_5E_vysledky.png>]
+[14 <./priklad_5E_vysledky.png>]
 
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -856,14 +862,14 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
 
-[14 <./priklad_5E_haigh.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 615--615
+[15 <./priklad_5E_haigh.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 652--652
 []|$\OML/lmm/m/it/10.95 F[] \OT1/lmr/m/n/10.95 = \OMS/lmsy/m/n/10.95 ^^@\OT1/lm
 r/m/n/10.95 14[]30 []$\T1/lmr/m/n/10.95 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 615--615
+Underfull \hbox (badness 10000) in paragraph at lines 652--652
 \OML/lmm/m/it/10.95 F[] \OT1/lmr/m/n/10.95 = 67[]30 []$\T1/lmr/m/n/10.95 ,
  []
 
@@ -876,22 +882,22 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.38004pt}.
 
-[15] (./reseni_E.aux)
+[16] (./reseni_E.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `reseni_E.out' has not changed.
-(rerunfilecheck)             Checksum: 122D3DE715DE10230B57D9B1CA5B90E2;7919.
+(rerunfilecheck)             Checksum: 5F7F50DFAAEE88D61A1528A3E31E52BD;9911.
  ) 
 Here is how much of TeX's memory you used:
- 14817 strings out of 474662
- 237517 string characters out of 5751110
- 664995 words of memory out of 5000000
- 37510 multiletter control sequences out of 15000+600000
- 632339 words of font info for 95 fonts, out of 8000000 for 9000
+ 14840 strings out of 474662
+ 237936 string characters out of 5751110
+ 665334 words of memory out of 5000000
+ 37523 multiletter control sequences out of 15000+600000
+ 636602 words of font info for 96 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
- 75i,15n,79p,475b,596s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,16n,79p,487b,596s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></u
 sr/local/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/lo
 cal/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lmbx8.pfb></usr/local/te
@@ -904,14 +910,17 @@ onts/type1/public/lm/lmmib10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts
 /type1/public/lm/lmr10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1
 /public/lm/lmr12.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/publi
 c/lm/lmr6.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lm
-r8.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lmsy10.pf
-b></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></us
-r/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10
-.pfb>
-Output written on reseni_E.pdf (15 pages, 1397400 bytes).
+r8.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lmri10.pf
+b></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></u
+sr/local/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></usr/loc
+al/texlive/2025basic/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/tex
+live/2025basic/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/
+local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.p
+fb>
+Output written on reseni_E.pdf (16 pages, 1438084 bytes).
 PDF statistics:
- 486 PDF objects out of 1000 (max. 8388607)
- 413 compressed objects within 5 object streams
- 124 named destinations out of 1000 (max. 500000)
- 369 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 537 PDF objects out of 1000 (max. 8388607)
+ 457 compressed objects within 5 object streams
+ 133 named destinations out of 1000 (max. 500000)
+ 409 words of extra memory for PDF output out of 10000 (max. 10000000)
 

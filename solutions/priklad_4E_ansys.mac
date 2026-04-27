@@ -1,7 +1,11 @@
 
 ! =====================================================
 ! Příklad 4E — ANSYS APDL skript
-! Součást s vrubem zatížená ohybovým momentem
+! Stupňovitý plochý prut zatížený ohybovým momentem
+! Geometrie podle konsensu (sage MCP):
+!   h: 45 -> 30 -> 10 mm, t = 15 mm
+!   r1 = 3 mm (45->30), r2 = 6 mm (30->10)
+!   L1 = 60, L2 = 80, L3 = 60 mm
 ! =====================================================
 
 FINISH
@@ -11,40 +15,66 @@ FINISH
 
 ! Materiálové vlastnosti
 ET,1,PLANE183           ! 2D 8-uzlový prvek
+KEYOPT,1,3,3            ! Plane stress with thickness
+R,1,15                  ! Tloušťka t = 15 mm
 MP,EX,1,210000          ! Modul pružnosti [MPa]
 MP,PRXY,1,0.3           ! Poissonův poměr
 
-! Geometrie - parametry
-h_total = 45            ! Celková výška [mm]
-notch_top = 10          ! Hloubka horního vrubu [mm]
-notch_bot = 6           ! Hloubka dolního vrubu [mm]
-h_net = h_total - notch_top - notch_bot  ! Čistá výška
-r_notch = 3             ! Poloměr zaoblení vrubu [mm]
-thickness = 15          ! Tloušťka [mm]
-L_beam = 100            ! Délka [mm]
+! Geometrie — parametry
+h1 = 45                 ! Výška úseku 1 [mm]
+h2 = 30                 ! Výška úseku 2 [mm]
+h3 = 10                 ! Výška úseku 3 [mm]
+r1 = 3                  ! Poloměr přechodu 1 [mm]
+r2 = 6                  ! Poloměr přechodu 2 [mm]
+L1 = 60                 ! Délka úseku 1 [mm]
+L2 = 80                 ! Délka úseku 2 [mm]
+L3 = 60                 ! Délka úseku 3 [mm]
+t  = 15                 ! Tloušťka [mm]
 
-! Klíčové body a plochy
-! (zjednodušená geometrie - detaily závisí na přesném tvaru)
-RECTNG,0,L_beam,0,h_total
+! Symetrický stupňovitý profil kolem osy x (vodorovně)
+! Úsek 1: x ∈ [0, L1], výška centrovaná h1/2
+! Úsek 2: x ∈ [L1, L1+L2], výška h2/2
+! Úsek 3: x ∈ [L1+L2, L1+L2+L3], výška h3/2
 
-! Mesh
-AESIZE,ALL,1.0          ! Velikost prvku 1 mm
-! Zjemnění u vrubu
-! LREFINE,...
+x1 = L1
+x2 = L1 + L2
+x3 = L1 + L2 + L3
 
+! Obdélníky horní poloviny (osa symetrie y=0)
+RECTNG, 0,  x1,   0, h1/2
+RECTNG, x1, x2,   0, h2/2
+RECTNG, x2, x3,   0, h3/2
+AGLUE, ALL
+
+! Zaoblení přechodů
+LFILLT, 2, 5, r1   ! r1 mezi úsekem 1 a 2 (čísla čar dle topologie)
+LFILLT, 6, 9, r2   ! r2 mezi úsekem 2 a 3
+
+! Mesh — globální + lokální zjemnění u zaoblení
+AESIZE,ALL,2.0
+LESIZE, ALL,,, 8       ! u zaoblení >= 8 prvků
 AMESH,ALL
 
-! Okrajové podmínky
-! Vetknutí na levém okraji
-DL,4,,ALL,0
+! Okrajové podmínky — symetrie kolem y=0
+NSEL,S,LOC,Y,0
+DSYM,SYMM,Y
+NSEL,ALL
 
-! Zatížení - moment na pravém okraji
-! M = 100 N·m = 100000 N·mm
-! Rozložení do lineárního napětí na pravém okraji
-! σ = M*y/I, síla = σ * t * dy
+! Vetknutí na levém okraji (x=0)
+NSEL,S,LOC,X,0
+D,ALL,UX,0
+D,ALL,UY,0
+NSEL,ALL
+
+! Zatížení — moment M = 100 N·m = 100000 N·mm na pravém okraji
+! σ(y) = M·y/I3, F(y) = σ·t·dy ekvivalentní lineárnímu rozložení
+! Realizace přes Remote Force / linear pressure
 
 /SOLU
 ANTYPE,STATIC
+NSEL,S,LOC,X,x3
+SF,ALL,PRES,...        ! lineárně rozložený tlak ekvivalentní M (doplnit dle topologie)
+NSEL,ALL
 SOLVE
 
 /POST1
@@ -53,11 +83,15 @@ PLNSOL,U,SUM            ! Celkový posuv
 
 ! Výpis maximálních hodnot
 NSORT,S,EQV
-*GET,sigma_max,SORT,,MAX
+*GET,sigma_max_fem,SORT,,MAX
 NSORT,U,Y
 *GET,w_max_fem,SORT,,MAX
 
-/COM, Max von Mises stress = %sigma_max% MPa
-/COM, Max deflection = %w_max_fem% mm
+/COM, Max von Mises stress = %sigma_max_fem% MPa  (analyt. 460 MPa u r2)
+/COM, Max deflection       = %w_max_fem% mm       (analyt. 0.842 mm)
+
+! Stochastika: ANSYS PDS / DesignXplorer Six Sigma
+!   vstupy lognormal CoV=0.1: h1, h2, h3, t, r1, r2, M, R_e, E
+!   N = 10000 MC, výstup P_f(σ_max > R_e), Spearman citlivosti
 
 FINISH

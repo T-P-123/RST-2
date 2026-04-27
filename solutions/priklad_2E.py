@@ -1,169 +1,109 @@
 """
-Příklad 2E — Osový kvadratický moment L-profilu k ose x a y
-============================================================
-L-profil (rovnoramenný úhelník) s rozměry z obrázku:
+Příklad 2E — Osový kvadratický moment nesymetrického průřezu (3 obdélníky)
+==========================================================================
+Průřez složený ze 3 obdélníků (počátek v levém dolním rohu obalu):
 
-Průřez (pohled 2D, počátek v levém dolním rohu):
+    +-100-+
+    | (3) | 30 mm  horní pásnice (užší, vlevo zarovnaná)
+    +-----+----+
+    |30|        ^
+    |  | (2)    | 140 mm  stojina (zarovnaná k levému okraji)
+    |  |        |
+    +--+        v
+    +----------------------+
+    |        (1)           | 30 mm  spodní pásnice (širší)
+    +----------------------+
+    <------- 200 mm ------->
 
-    |30|
-    +--+
-    |  |  ^
-    |  |  | 30 mm (horní část)
-    |  |  |
-    |  +  + - - - - (y=170)
-    |  |  |
-    |  |  | 140 mm (střední část)
-    |  |  |
-    |  |  v
-    +--+--+---------170mm--------+
-    |          30mm               |  30 mm (výška)
-    +--+--+----------------------+
-    |30|
-       ȳ
-
-Rozměry průřezu:
-  - Svislé rameno: šířka 30 mm, celková výška 200 mm (30+140+30)
-  - Vodorovné rameno: celková šířka 200 mm (30+170), výška 30 mm
-  - Sdílený roh: 30 × 30 mm v levém dolním rohu
+Rozměry:
+  - Spodní pásnice (1): 200 × 30 mm
+  - Stojina (2):         30 × 140 mm  (vlevo)
+  - Horní pásnice (3):  100 × 30 mm   (vlevo)
   - 70 mm = hloubka 3D tělesa (extruze), neovlivňuje 2D průřez
 
 Stochastické veličiny: normální rozdělení, CoV = 0.2
 """
 
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-# ============================================================
-# 1. DETERMINISTICKÉ ŘEŠENÍ
-# ============================================================
+OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 def compute_section_properties(rectangles):
-    """
-    Vypočítá těžiště a osové kvadratické momenty složeného průřezu.
-    rectangles = [(b, h, xc, yc), ...] kde:
-      b = šířka, h = výška, xc,yc = souřadnice těžiště obdélníku
-    """
+    """rectangles = [(b, h, xc, yc), ...]; vrací (A, xC, yC, Ix', Iy')."""
     A_total = 0.0
     Sx = 0.0
     Sy = 0.0
-
     for b, h, xc, yc in rectangles:
         A = b * h
         A_total += A
         Sx += A * yc
         Sy += A * xc
-
     xC = Sy / A_total
     yC = Sx / A_total
 
     Ix = 0.0
     Iy = 0.0
-
     for b, h, xc, yc in rectangles:
         A = b * h
-        Ix_own = b * h**3 / 12
-        Iy_own = b**3 * h / 12
-        Ix += Ix_own + A * (yc - yC)**2
-        Iy += Iy_own + A * (xc - xC)**2
-
+        Ix += b * h**3 / 12 + A * (yc - yC) ** 2
+        Iy += b**3 * h / 12 + A * (xc - xC) ** 2
     return A_total, xC, yC, Ix, Iy
 
 
-# Rozměry L-profilu
-t = 30.0         # mm — tloušťka obou ramen
-h_total = 200.0  # mm — celková výška svislého ramena (30+140+30)
-b_total = 200.0  # mm — celková šířka vodorovného ramena (30+170)
+# ============================================================
+# 1. DETERMINISTICKÉ ŘEŠENÍ
+# ============================================================
+b1, h1 = 200.0, 30.0   # spodní pásnice
+b2, h2 = 30.0, 140.0   # stojina
+b3, h3 = 100.0, 30.0   # horní pásnice
 
-# Rozklad na 2 nepřekrývající se obdélníky:
-# 1) Vodorovné rameno (celé): b_total × t, těžiště v (b_total/2, t/2)
-# 2) Svislé rameno (nad sdíleným rohem): t × (h_total - t), těžiště v (t/2, t + (h_total-t)/2)
-
+# Souřadnice těžišť dílčích obdélníků (počátek = levý dolní roh obalu)
 rects_det = [
-    (b_total, t, b_total/2, t/2),                         # Vodorovné rameno: 200×30
-    (t, h_total - t, t/2, t + (h_total - t)/2),           # Svislé rameno (nad rohem): 30×170
+    (b1, h1, b1 / 2, h1 / 2),                      # (1) 100, 15
+    (b2, h2, b2 / 2, h1 + h2 / 2),                 # (2) 15, 100
+    (b3, h3, b3 / 2, h1 + h2 + h3 / 2),            # (3) 50, 185
 ]
 
-A, xC, yC, Ix, Iy = compute_section_properties(rects_det)
+A, xC, yC, Ix_p, Iy_p = compute_section_properties(rects_det)
+
+# Momenty k vnějším osám (okraje obalu)
+Ix_outer = Ix_p + A * yC**2
+Iy_outer = Iy_p + A * xC**2
 
 print("=" * 60)
-print("PŘÍKLAD 2E — DETERMINISTICKÉ ŘEŠENÍ (L-PROFIL)")
+print("PŘÍKLAD 2E — DETERMINISTICKÉ ŘEŠENÍ (nesymetrický průřez)")
 print("=" * 60)
-print(f"\nGeometrie:")
-print(f"  Svislé rameno: {t:.0f} × {h_total:.0f} mm")
-print(f"  Vodorovné rameno: {b_total:.0f} × {t:.0f} mm")
-print(f"  Sdílený roh: {t:.0f} × {t:.0f} mm")
-
-print(f"\nPlocha průřezu:")
-A1 = b_total * t
-A2 = t * (h_total - t)
-print(f"  A₁ (vodorovné) = {b_total} × {t} = {A1:.0f} mm²")
-print(f"  A₂ (svislé nad rohem) = {t} × {h_total - t} = {A2:.0f} mm²")
-print(f"  A = A₁ + A₂ = {A:.0f} mm²")
-
-print(f"\nTěžiště:")
-print(f"  x_C = {xC:.2f} mm")
-print(f"  y_C = {yC:.2f} mm")
-
-print(f"\nOsové kvadratické momenty (Steinerova věta):")
-
-# Podrobný výpočet pro kontrolu
-d1y = t/2 - yC
-d2y = (t + (h_total - t)/2) - yC
-Ix1 = b_total * t**3 / 12 + A1 * d1y**2
-Ix2 = t * (h_total - t)**3 / 12 + A2 * d2y**2
-
-print(f"\n  I_x:")
-print(f"    Ix₁ = {b_total}·{t}³/12 + {A1:.0f}·({t/2:.1f} - {yC:.2f})² "
-      f"= {b_total*t**3/12:.0f} + {A1 * d1y**2:.0f} = {Ix1:.0f} mm⁴")
-print(f"    Ix₂ = {t}·{h_total-t}³/12 + {A2:.0f}·({t + (h_total-t)/2:.1f} - {yC:.2f})² "
-      f"= {t*(h_total-t)**3/12:.0f} + {A2 * d2y**2:.0f} = {Ix2:.0f} mm⁴")
-print(f"    Ix = {Ix1:.0f} + {Ix2:.0f} = {Ix:.0f} mm⁴ = {Ix/1e6:.4f} × 10⁶ mm⁴")
-
-d1x = b_total/2 - xC
-d2x = t/2 - xC
-Iy1 = b_total**3 * t / 12 + A1 * d1x**2
-Iy2 = t**3 * (h_total - t) / 12 + A2 * d2x**2
-
-print(f"\n  I_y:")
-print(f"    Iy₁ = {b_total}³·{t}/12 + {A1:.0f}·({b_total/2:.1f} - {xC:.2f})² "
-      f"= {b_total**3*t/12:.0f} + {A1 * d1x**2:.0f} = {Iy1:.0f} mm⁴")
-print(f"    Iy₂ = {t}³·{h_total-t}/12 + {A2:.0f}·({t/2:.1f} - {xC:.2f})² "
-      f"= {t**3*(h_total-t)/12:.0f} + {A2 * d2x**2:.0f} = {Iy2:.0f} mm⁴")
-print(f"    Iy = {Iy1:.0f} + {Iy2:.0f} = {Iy:.0f} mm⁴ = {Iy/1e6:.4f} × 10⁶ mm⁴")
-
-print(f"\n  *** Ix = {Ix/1e6:.4f} × 10⁶ mm⁴ ***")
-print(f"  *** Iy = {Iy/1e6:.4f} × 10⁶ mm⁴ ***")
+print(f"\nPlocha: A = {A:.0f} mm²")
+print(f"Těžiště: x_C = {xC:.2f} mm, y_C = {yC:.2f} mm")
+print(f"\nTěžišťové momenty:")
+print(f"  Ix' = {Ix_p/1e6:.4f} × 10⁶ mm⁴")
+print(f"  Iy' = {Iy_p/1e6:.4f} × 10⁶ mm⁴")
+print(f"\nMomenty k vnějším osám:")
+print(f"  Ix  = {Ix_outer/1e6:.4f} × 10⁶ mm⁴")
+print(f"  Iy  = {Iy_outer/1e6:.4f} × 10⁶ mm⁴")
 
 # ============================================================
 # 2. STOCHASTICKÁ ANALÝZA — Monte Carlo
 # ============================================================
-
 N_sim = 100_000
 CoV = 0.2
 np.random.seed(42)
 
-# Střední hodnoty rozměrů L-profilu (mm)
-# Nezávislé rozměry: tloušťka t, šířka vodorovného ramena b_h, výška svislého ramena h_v
-# b_h = 170 mm (přesah za stojinu), h_v_above = 140 mm (výška nad rohem), horní = 30mm
-# Ale protože t, b_total, h_total jsou odvozeny z podrozměrů:
-#   tloušťka t = 30 mm
-#   přesah dolní příruby = 170 mm
-#   výška stojiny nad přírubou = 140 mm
-#   výška horní části = 30 mm
-
 dims_mean = {
-    't': 30.0,              # tloušťka ramen
-    'overhang_h': 170.0,    # přesah vodorovného ramena (= b_total - t)
-    'h_web': 140.0,         # výška stojiny mezi rameny
-    'h_top': 30.0,          # výška horní části svislého ramena
+    "b1": 200.0, "h1": 30.0,
+    "b2": 30.0,  "h2": 140.0,
+    "b3": 100.0, "h3": 30.0,
 }
 
 samples = {}
 for key, mu in dims_mean.items():
     sigma = mu * CoV
-    samples[key] = np.random.normal(mu, sigma, N_sim)
-    samples[key] = np.maximum(samples[key], 1.0)
+    s = np.random.normal(mu, sigma, N_sim)
+    samples[key] = np.maximum(s, 1.0)
 
 Ix_mc = np.zeros(N_sim)
 Iy_mc = np.zeros(N_sim)
@@ -171,13 +111,13 @@ xC_mc = np.zeros(N_sim)
 yC_mc = np.zeros(N_sim)
 
 for i in range(N_sim):
-    ti = samples['t'][i]
-    b_tot_i = ti + samples['overhang_h'][i]     # celková šířka vodorovného ramena
-    h_tot_i = ti + samples['h_web'][i] + samples['h_top'][i]  # celková výška svislého
-
+    b1i, h1i = samples["b1"][i], samples["h1"][i]
+    b2i, h2i = samples["b2"][i], samples["h2"][i]
+    b3i, h3i = samples["b3"][i], samples["h3"][i]
     rects = [
-        (b_tot_i, ti, b_tot_i/2, ti/2),                           # Vodorovné rameno
-        (ti, h_tot_i - ti, ti/2, ti + (h_tot_i - ti)/2),          # Svislé rameno (nad rohem)
+        (b1i, h1i, b1i / 2, h1i / 2),
+        (b2i, h2i, b2i / 2, h1i + h2i / 2),
+        (b3i, h3i, b3i / 2, h1i + h2i + h3i / 2),
     ]
     A_i, xC_i, yC_i, Ix_i, Iy_i = compute_section_properties(rects)
     Ix_mc[i] = Ix_i
@@ -188,97 +128,102 @@ for i in range(N_sim):
 print(f"\n{'='*60}")
 print(f"STOCHASTICKÁ ANALÝZA (Monte Carlo, N={N_sim:,}, CoV={CoV})")
 print("=" * 60)
-print(f"Ix: μ = {np.mean(Ix_mc)/1e6:.4f} × 10⁶ mm⁴,  σ = {np.std(Ix_mc)/1e6:.4f} × 10⁶ mm⁴,  "
+print(f"Ix': μ = {np.mean(Ix_mc)/1e6:.4f} × 10⁶ mm⁴, σ = {np.std(Ix_mc)/1e6:.4f}, "
       f"CoV = {np.std(Ix_mc)/np.mean(Ix_mc):.4f}")
-print(f"Iy: μ = {np.mean(Iy_mc)/1e6:.4f} × 10⁶ mm⁴,  σ = {np.std(Iy_mc)/1e6:.4f} × 10⁶ mm⁴,  "
+print(f"Iy': μ = {np.mean(Iy_mc)/1e6:.4f} × 10⁶ mm⁴, σ = {np.std(Iy_mc)/1e6:.4f}, "
       f"CoV = {np.std(Iy_mc)/np.mean(Iy_mc):.4f}")
-print(f"xC: μ = {np.mean(xC_mc):.2f} mm,  σ = {np.std(xC_mc):.2f} mm")
-print(f"yC: μ = {np.mean(yC_mc):.2f} mm,  σ = {np.std(yC_mc):.2f} mm")
-
+print(f"xC:  μ = {np.mean(xC_mc):.2f} mm, σ = {np.std(xC_mc):.2f} mm")
+print(f"yC:  μ = {np.mean(yC_mc):.2f} mm, σ = {np.std(yC_mc):.2f} mm")
 for q_val in [0.025, 0.5, 0.975]:
-    print(f"  Ix ({q_val*100:.1f}%) = {np.quantile(Ix_mc, q_val)/1e6:.4f} × 10⁶ mm⁴")
+    print(f"  Ix' ({q_val*100:.1f}%) = {np.quantile(Ix_mc, q_val)/1e6:.4f} × 10⁶ mm⁴")
 
 # ============================================================
 # 3. GRAFY
 # ============================================================
-
 fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-fig.suptitle('Příklad 2E — Osové kvadratické momenty L-profilu\n'
-             f'(Monte Carlo, N={N_sim:,}, CoV={CoV})', fontsize=13, fontweight='bold')
+fig.suptitle("Příklad 2E — Osové kvadratické momenty (těžišťové)\n"
+             f"Monte Carlo, N={N_sim:,}, CoV={CoV}", fontsize=13, fontweight="bold")
 
-axes[0].hist(Ix_mc/1e6, bins=80, density=True, alpha=0.7, color='steelblue', edgecolor='white')
-axes[0].axvline(Ix/1e6, color='red', linewidth=2, linestyle='--',
-                label=f'Determin. = {Ix/1e6:.2f}×10⁶')
-axes[0].set_xlabel('Ix [×10⁶ mm⁴]')
-axes[0].set_ylabel('Hustota pravděpodobnosti')
-axes[0].set_title('Osový kvadratický moment Ix')
+axes[0].hist(Ix_mc / 1e6, bins=80, density=True, alpha=0.7, color="steelblue", edgecolor="white")
+axes[0].axvline(Ix_p / 1e6, color="red", linewidth=2, linestyle="--",
+                label=f"Determin. = {Ix_p/1e6:.2f}×10⁶")
+axes[0].set_xlabel("Ix' [×10⁶ mm⁴]")
+axes[0].set_ylabel("Hustota pravděpodobnosti")
+axes[0].set_title("Těžišťový moment Ix'")
 axes[0].legend()
 axes[0].grid(True, alpha=0.3)
 
-axes[1].hist(Iy_mc/1e6, bins=80, density=True, alpha=0.7, color='steelblue', edgecolor='white')
-axes[1].axvline(Iy/1e6, color='red', linewidth=2, linestyle='--',
-                label=f'Determin. = {Iy/1e6:.2f}×10⁶')
-axes[1].set_xlabel('Iy [×10⁶ mm⁴]')
-axes[1].set_ylabel('Hustota pravděpodobnosti')
-axes[1].set_title('Osový kvadratický moment Iy')
+axes[1].hist(Iy_mc / 1e6, bins=80, density=True, alpha=0.7, color="steelblue", edgecolor="white")
+axes[1].axvline(Iy_p / 1e6, color="red", linewidth=2, linestyle="--",
+                label=f"Determin. = {Iy_p/1e6:.2f}×10⁶")
+axes[1].set_xlabel("Iy' [×10⁶ mm⁴]")
+axes[1].set_ylabel("Hustota pravděpodobnosti")
+axes[1].set_title("Těžišťový moment Iy'")
 axes[1].legend()
 axes[1].grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/tmp/RST-2/solutions/priklad_2E_histogramy.png', dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(OUT_DIR, "priklad_2E_histogramy.png"), dpi=150, bbox_inches="tight")
 plt.close()
 
-# Vizualizace průřezu
+# Vizualizace průřezu — 3 obdélníky
 fig2, ax2 = plt.subplots(1, 1, figsize=(8, 8))
-ax2.set_title('Příklad 2E — L-profil (úhelník)', fontsize=13, fontweight='bold')
+ax2.set_title("Příklad 2E — Nesymetrický průřez (3 obdélníky)", fontsize=13, fontweight="bold")
 
-# Obdélníky
-colors = ['#4ECDC4', '#45B7D1']
-labels = ['Vodorovné rameno (200×30)', 'Svislé rameno (30×170)']
+colors = ["#4ECDC4", "#45B7D1", "#FFA07A"]
+labels = [f"(1) Spodní pásnice {b1:.0f}×{h1:.0f}",
+          f"(2) Stojina {b2:.0f}×{h2:.0f}",
+          f"(3) Horní pásnice {b3:.0f}×{h3:.0f}"]
 rects_draw = [
-    (0, 0, b_total, t),                    # Vodorovné rameno
-    (0, t, t, h_total - t),                # Svislé rameno (nad rohem)
+    (0, 0, b1, h1),                  # spodní pásnice
+    (0, h1, b2, h2),                 # stojina
+    (0, h1 + h2, b3, h3),            # horní pásnice
 ]
 for (rx, ry, rw, rh), color, label in zip(rects_draw, colors, labels):
     rect = patches.Rectangle((rx, ry), rw, rh, linewidth=2,
-                              edgecolor='black', facecolor=color, alpha=0.7, label=label)
+                             edgecolor="black", facecolor=color, alpha=0.75, label=label)
     ax2.add_patch(rect)
 
-ax2.plot(xC, yC, 'ro', markersize=10, zorder=5, label=f'Těžiště C ({xC:.1f}, {yC:.1f})')
-ax2.axhline(y=yC, color='red', linestyle=':', alpha=0.5, label=f'osa x\' (y={yC:.1f})')
-ax2.axvline(x=xC, color='blue', linestyle=':', alpha=0.5, label=f'osa y\' (x={xC:.1f})')
+ax2.plot(xC, yC, "ro", markersize=10, zorder=5,
+         label=f"Těžiště C ({xC:.2f}, {yC:.2f})")
+ax2.axhline(y=yC, color="red", linestyle=":", alpha=0.6, label=f"osa x' (y={yC:.2f})")
+ax2.axvline(x=xC, color="blue", linestyle=":", alpha=0.6, label=f"osa y' (x={xC:.2f})")
 
 # Kóty
-ax2.annotate('', xy=(0, -10), xytext=(200, -10),
-             arrowprops=dict(arrowstyle='<->', color='black'))
-ax2.text(100, -18, '200 mm', ha='center', fontsize=9)
+ax2.annotate("", xy=(0, -10), xytext=(b1, -10),
+             arrowprops=dict(arrowstyle="<->", color="black"))
+ax2.text(b1 / 2, -18, f"{b1:.0f} mm", ha="center", fontsize=9)
 
-ax2.annotate('', xy=(210, 0), xytext=(210, 30),
-             arrowprops=dict(arrowstyle='<->', color='black'))
-ax2.text(225, 15, '30', ha='left', fontsize=9)
+ax2.annotate("", xy=(b1 + 12, 0), xytext=(b1 + 12, h1),
+             arrowprops=dict(arrowstyle="<->", color="black"))
+ax2.text(b1 + 16, h1 / 2, f"{h1:.0f}", ha="left", fontsize=9)
 
-ax2.annotate('', xy=(-15, 0), xytext=(-15, 200),
-             arrowprops=dict(arrowstyle='<->', color='black'))
-ax2.text(-20, 100, '200 mm', ha='right', fontsize=9, rotation=90)
+ax2.annotate("", xy=(-15, h1), xytext=(-15, h1 + h2),
+             arrowprops=dict(arrowstyle="<->", color="black"))
+ax2.text(-20, h1 + h2 / 2, f"{h2:.0f}", ha="right", fontsize=9, rotation=90)
 
-ax2.annotate('', xy=(40, 30), xytext=(40, 170),
-             arrowprops=dict(arrowstyle='<->', color='black'))
-ax2.text(45, 100, '140', ha='left', fontsize=9)
+ax2.annotate("", xy=(b2 + 5, h1), xytext=(b2 + 5, h1 + h2),
+             arrowprops=dict(arrowstyle="<->", color="black"))
+ax2.text(b2 + 9, h1 + h2 / 2, f"({b2:.0f})", ha="left", fontsize=8, color="gray")
 
-ax2.annotate('', xy=(0, 208), xytext=(30, 208),
-             arrowprops=dict(arrowstyle='<->', color='black'))
-ax2.text(15, 215, '30', ha='center', fontsize=9)
+ax2.annotate("", xy=(0, h1 + h2 + h3 + 8), xytext=(b3, h1 + h2 + h3 + 8),
+             arrowprops=dict(arrowstyle="<->", color="black"))
+ax2.text(b3 / 2, h1 + h2 + h3 + 14, f"{b3:.0f}", ha="center", fontsize=9)
 
-ax2.set_xlim(-40, 250)
-ax2.set_ylim(-30, 230)
-ax2.set_aspect('equal')
-ax2.set_xlabel('x [mm]')
-ax2.set_ylabel('y [mm]')
-ax2.legend(loc='upper right', fontsize=9)
+ax2.annotate("", xy=(b3 + 10, h1 + h2), xytext=(b3 + 10, h1 + h2 + h3),
+             arrowprops=dict(arrowstyle="<->", color="black"))
+ax2.text(b3 + 14, h1 + h2 + h3 / 2, f"{h3:.0f}", ha="left", fontsize=9)
+
+ax2.set_xlim(-40, b1 + 30)
+ax2.set_ylim(-30, h1 + h2 + h3 + 30)
+ax2.set_aspect("equal")
+ax2.set_xlabel("x [mm]")
+ax2.set_ylabel("y [mm]")
+ax2.legend(loc="upper right", fontsize=9)
 ax2.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/tmp/RST-2/solutions/priklad_2E_profil.png', dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(OUT_DIR, "priklad_2E_profil.png"), dpi=150, bbox_inches="tight")
 plt.close()
 
 print("\nGrafy uloženy.")

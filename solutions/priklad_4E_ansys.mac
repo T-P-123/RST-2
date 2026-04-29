@@ -5,7 +5,7 @@
 ! Geometrie podle konsensu (sage MCP):
 !   h: 45 -> 30 -> 10 mm, t = 15 mm
 !   r1 = 3 mm (45->30), r2 = 6 mm (30->10)
-!   L1 = 60, L2 = 80, L3 = 60 mm
+!   L1 = 60, L2 = 60, L3 = 60 mm
 ! =====================================================
 
 FINISH
@@ -27,7 +27,7 @@ h3 = 10                 ! Výška úseku 3 [mm]
 r1 = 3                  ! Poloměr přechodu 1 [mm]
 r2 = 6                  ! Poloměr přechodu 2 [mm]
 L1 = 60                 ! Délka úseku 1 [mm]
-L2 = 80                 ! Délka úseku 2 [mm]
+L2 = 60                 ! Délka úseku 2 [mm]
 L3 = 60                 ! Délka úseku 3 [mm]
 t  = 15                 ! Tloušťka [mm]
 
@@ -87,8 +87,8 @@ NSORT,S,EQV
 NSORT,U,Y
 *GET,w_max_fem,SORT,,MAX
 
-/COM, Max von Mises stress = %sigma_max_fem% MPa  (analyt. 460 MPa u r2)
-/COM, Max deflection       = %w_max_fem% mm       (analyt. 0.842 mm)
+/COM, Max von Mises stress = %sigma_max_fem% MPa  (analyt. 400 MPa u úseku 3, Kt2=1)
+/COM, Max deflection       = %w_max_fem% mm       (analyt. 0.800 mm)
 
 ! Stochastika: ANSYS PDS / DesignXplorer Six Sigma
 !   vstupy lognormal CoV=0.1: h1, h2, h3, t, r1, r2, M, R_e, E

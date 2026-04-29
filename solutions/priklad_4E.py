@@ -41,16 +41,16 @@ r1 = 3.0     # mm — přechod 45→30
 r2 = 6.0     # mm — přechod 30→10
 t  = 15.0    # mm — tloušťka
 
-# Délky úseků (odhad — v zadání nekótováno)
+# Délky úseků (zadáno: všechny úseky 60 mm)
 L1 = 60.0
-L2 = 80.0
+L2 = 60.0
 L3 = 60.0
 
-# Součinitele tvaru (Peterson, stepped flat bar v ohybu)
-# Vrub r1 (45→30): D/d = 1.5, r/d = 0.1 → Kt1 ≈ 1.68
-# Vrub r2 (30→10): D/d = 3.0, r/d = 0.6 → Kt2 ≈ 1.15
-Kt1 = 1.68
-Kt2 = 1.15
+# Součinitele tvaru (amesweb kalkulátor — shoulder fillets in flat bar, bending)
+# Vrub r1 (45→30): D/d = 1.5, r/d = 0.1 → Kt1 ≈ 1.86
+# Vrub r2 (30→10): D/d = 3.0, r/d = 0.6 → Kt2 = 1.0 (velmi měkké zaoblení, žádná koncentrace)
+Kt1 = 1.86
+Kt2 = 1.0
 
 # Pomocné průřezové charakteristiky
 def W(h, t=t):
@@ -68,7 +68,7 @@ print("=" * 60)
 print(f"\nGeometrie:")
 print(f"  h1 = {h1}, h2 = {h2}, h3 = {h3} mm")
 print(f"  r1 = {r1}, r2 = {r2} mm,  t = {t} mm")
-print(f"  L1 = {L1}, L2 = {L2}, L3 = {L3} mm (odhad)")
+print(f"  L1 = {L1}, L2 = {L2}, L3 = {L3} mm")
 print(f"  W1 = {W1:.1f}, W2 = {W2:.1f}, W3 = {W3:.1f} mm³")
 print(f"  I1 = {I1:.0f}, I2 = {I2:.0f}, I3 = {I3:.0f} mm⁴")
 print(f"  Kt1 = {Kt1}, Kt2 = {Kt2}")
@@ -131,13 +131,13 @@ Re_mc  = lognormal_sample(R_e_mean, CoV, N_sim)
 wm_mc  = lognormal_sample(w_max_mean, CoV, N_sim)
 h3_mc  = lognormal_sample(h3, CoV, N_sim)
 t_mc   = lognormal_sample(t, CoV, N_sim)
-Kt2_mc = lognormal_sample(Kt2, CoV, N_sim)
+# Kt2 = 1.0 (žádná koncentrace) — deterministicky, bez CoV
 L_mc   = lognormal_sample(L1+L2+L3, CoV, N_sim)
 E_mc   = lognormal_sample(E, CoV, N_sim)
 
-# σ_max v kritickém vrubu r2
+# σ_max v kritickém průřezu (úsek 3); Kt2 = 1 → σ_max = σ_nom,3
 W3_mc = t_mc * h3_mc**2 / 6.0
-sigma_max_mc = Kt2_mc * M_mc / W3_mc
+sigma_max_mc = Kt2 * M_mc / W3_mc
 
 # Stochastický průhyb stejným vzorcem jako deterministický (stochastické h3, t, E, M):
 I3_mc = t_mc * h3_mc**3 / 12.0
@@ -176,7 +176,7 @@ print(f"  β_deform ≈ {beta_deform:.3f}")
 # ============================================================
 
 variables_yield = {
-    'h_3': h3_mc, 'M': M_mc, 'K_t2': Kt2_mc, 't': t_mc, 'R_e': Re_mc,
+    'h_3': h3_mc, 'M': M_mc, 't': t_mc, 'R_e': Re_mc,
 }
 variables_deform = {
     'h_3': h3_mc, 'L': L_mc, 'M': M_mc, 't': t_mc, 'E': E_mc, 'w_max': wm_mc,

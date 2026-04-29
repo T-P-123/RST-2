@@ -166,46 +166,46 @@ S $M = 100\,000\ \mathrm{N \cdot mm}$:
 | 2 | $100\,000 / 2\,250 = 44{,}44$ |
 | 3 | $100\,000 / 250 = \mathbf{400{,}0}$ ← **kritický úsek** |
 
-### 3.3 Součinitelé tvaru $K_t$ (amesweb kalkulátor)
+### 3.3 Součinitelé tvaru $K_t$ (mechanicalc.com)
 
-Hodnoty $K_t$ pro **shoulder fillet in flat bar** v ohybu odečteny z online kalkulátoru
-(<https://amesweb.info/stress-concentration-factor-calculator/shoulder-fillets-in-flat-bar.aspx>):
+Hodnoty $K_t$ pro **stepped flat bar** v ohybu odečteny z online kalkulátoru
+(<https://mechanicalc.com/calculators/stress-concentration/#>):
 
 **Vrub $r_1$ (přechod 45 → 30):**
 $$
 \frac{D}{d} = \frac{45}{30} = 1{,}5,\qquad \frac{r_1}{d} = \frac{3}{30} = 0{,}1
-\;\Longrightarrow\; K_{t1} \approx 1{,}86
+\;\Longrightarrow\; K_{t1} \approx 1{,}83
 $$
 
 **Vrub $r_2$ (přechod 30 → 10):**
 $$
 \frac{D}{d} = \frac{30}{10} = 3{,}0,\qquad \frac{r_2}{d} = \frac{6}{10} = 0{,}6
-\;\Longrightarrow\; K_{t2} = 1{,}00
+\;\Longrightarrow\; K_{t2} \approx 1{,}18
 $$
 
-> **Proč je $K_{t2} = 1$?** Vrub $r_2$ má relativně **velký** poloměr vůči užšímu rozměru ($r/d = 0{,}6$) — zaoblení je tak „měkké", že podle kalkulátoru nezpůsobuje žádnou koncentraci napětí. Vrub $r_1$ má naopak **ostré** zaoblení ($r/d = 0{,}1$) → výraznější koncentrace.
+> **Proč je $K_{t2}$ menší než $K_{t1}$?** Vrub $r_2$ má relativně **velký** poloměr vůči užšímu rozměru ($r/d = 0{,}6$) — zaoblení je „měkké" a koncentruje napětí jen mírně. Vrub $r_1$ má naopak **ostré** zaoblení ($r/d = 0{,}1$) — koncentrace silnější.
 
 ### 3.4 Skutečné maximální napětí ve vrubech
 
 Vrubový součinitel se aplikuje na nominální napětí v **užším** úseku za vrubem:
 
 $$
-\sigma_{\max,1} = K_{t1}\cdot\sigma_{\mathrm{nom},2} = 1{,}86 \cdot 44{,}44 = 82{,}7\ \mathrm{MPa}
+\sigma_{\max,1} = K_{t1}\cdot\sigma_{\mathrm{nom},2} = 1{,}83 \cdot 44{,}44 = 81{,}3\ \mathrm{MPa}
 $$
 
 $$
-\sigma_{\max,2} = K_{t2}\cdot\sigma_{\mathrm{nom},3} = 1{,}00 \cdot 400 = \boxed{400\ \mathrm{MPa}}
+\sigma_{\max,2} = K_{t2}\cdot\sigma_{\mathrm{nom},3} = 1{,}18 \cdot 400 = \boxed{472\ \mathrm{MPa}}
 $$
 
-**Rozhoduje úsek 3** ($\sigma_{\max,2} = 400$ MPa). Vrub $r_2$ nepřispívá koncentrací, ale samotné nominální napětí v nejužším průřezu zůstává nejvyšší.
+**Rozhoduje vrub $r_2$.** Přestože má nižší $K_t$, výrazně vyšší nominální napětí v úseku 3 dominuje.
 
 ### 3.5 Součinitel bezpečnosti k MS pružnosti
 
 $$
-k_{\mathrm{yield}} = \frac{R_e}{\sigma_{\max,2}} = \frac{500}{400} = \boxed{1{,}250}
+k_{\mathrm{yield}} = \frac{R_e}{\sigma_{\max,2}} = \frac{500}{472} = \boxed{1{,}059}
 $$
 
-Rezerva 25 % do meze kluzu — výrazně větší než s původními $K_t$.
+**Velmi malá rezerva** — pouhých 5,9 % do meze kluzu. Při i malé výrobní odchylce součást poteče.
 
 ### 3.6 Průhyb volného konce — Mohrova analogie pro stupňovitý prut
 
@@ -271,10 +271,10 @@ Více než 2,5× rezerva — deformace deterministicky vyhovuje s velkým komfor
 
 | Veličina | Hodnota | Vyhodnocení |
 |----------|---------|-------------|
-| $\sigma_{\max}$ | $400\ \mathrm{MPa}$ | < $R_e = 500\ \mathrm{MPa}$ ✓ ($k=1{,}250$) |
+| $\sigma_{\max}$ | $472\ \mathrm{MPa}$ | < $R_e = 500\ \mathrm{MPa}$ ✓ ($k=1{,}059$) |
 | $w$ | $0{,}800\ \mathrm{mm}$ | < $w_{\max} = 2\ \mathrm{mm}$ ✓ ($k=2{,}501$) |
 
-Deterministicky **oba mezní stavy vyhovují**; rezerva u MS pružnosti je 25 %.
+Deterministicky **oba mezní stavy vyhovují**, ale bezpečnost u MS pružnosti je velmi malá (5,9 %).
 
 ---
 
@@ -326,7 +326,7 @@ def lognormal_sample(mean, cov, n):
 | $w_{\max}$ | $2\ \mathrm{mm}$ | LN, CoV=0,1 | Limit deformace |
 | $h_3$ | $10\ \mathrm{mm}$ | LN, CoV=0,1 | Kritický rozměr |
 | $t$ | $15\ \mathrm{mm}$ | LN, CoV=0,1 | Tloušťka |
-| $K_{t2}$ | $1{,}00$ | deterministicky (žádná koncentrace) | Vrubový součinitel |
+| $K_{t2}$ | $1{,}18$ | LN, CoV=0,1 | Vrubový součinitel |
 | $L$ | $180\ \mathrm{mm}$ | LN, CoV=0,1 | Celková délka |
 | $E$ | $210\,000\ \mathrm{MPa}$ | LN, CoV=0,1 | Modul pružnosti |
 
@@ -339,14 +339,14 @@ W_3^{(k)} = \frac{t^{(k)}\cdot (h_3^{(k)})^2}{6}
 $$
 
 $$
-\sigma_{\max}^{(k)} = K_{t2}\cdot\frac{M^{(k)}}{W_3^{(k)}} = \frac{M^{(k)}}{W_3^{(k)}}\quad(K_{t2}=1)
+\sigma_{\max}^{(k)} = K_{t2}^{(k)}\cdot\frac{M^{(k)}}{W_3^{(k)}}
 $$
 
 V kódu:
 
 ```python
 W3_mc = t_mc * h3_mc**2 / 6.0
-sigma_max_mc = Kt2 * M_mc / W3_mc   # Kt2 = 1.0 deterministicky
+sigma_max_mc = Kt2_mc * M_mc / W3_mc
 ```
 
 ### 4.5 Výpočet průhybu v každé realizaci
@@ -399,18 +399,18 @@ P_deform_failure = np.sum(g_deform < 0) / N_sim
 
 | Mezní stav | $P_f$ | $\beta$ | Střední hodnota výstupu | Vyhodnocení |
 |------------|-------|---------|-------------------------|-------------|
-| **MS pružnosti** | $\boxed{21{,}48\ \%}$ | $0{,}79$ | $\mu(\sigma_{\max}) \approx 416\ \mathrm{MPa}$, $\sigma \approx 103\ \mathrm{MPa}$ | **Nevyhovuje** |
+| **MS pružnosti** | $\boxed{43{,}2\ \%}$ | $0{,}17$ | $\mu(\sigma_{\max}) \approx 491\ \mathrm{MPa}$, $\sigma \approx 132\ \mathrm{MPa}$ | **Nevyhovuje** |
 | **MS deformace** | $\boxed{0{,}36\ \%}$ | $2{,}69$ | $\mu(w) \approx 0{,}86\ \mathrm{mm}$ | Vyhovuje s rezervou |
 
-### 4.8 Klíčový závěr — proč je $P_f$ pro pružnost stále velké?
+### 4.8 Klíčový závěr — proč je $P_f$ pro pružnost tak velké?
 
-**Deterministicky** $\sigma_{\max} = 400\ \mathrm{MPa}$ leží **pod** $R_e = 500\ \mathrm{MPa}$ — mezera 100 MPa, $k = 1{,}25$.
+**Deterministicky** $\sigma_{\max} = 472\ \mathrm{MPa}$ leží **těsně pod** $R_e = 500\ \mathrm{MPa}$ — mezera pouhých 28 MPa.
 
-**Stochasticky** je směrodatná odchylka výstupu $\sigma_{\sigma_{\max}} \approx 103\ \mathrm{MPa}$, tedy **srovnatelná** s touto bezpečnostní rezervou.
+**Stochasticky** je směrodatná odchylka výstupu $\sigma_{\sigma_{\max}} \approx 132\ \mathrm{MPa}$, tedy **téměř pětkrát** větší než tato bezpečnostní rezerva.
 
-**Důvod velkého rozptylu:** $\sigma_{\max}$ závisí kvadraticky na $h_3$ ($\sigma \propto 1/h_3^2$). Lognormální propagace přes mocninnou závislost **zesiluje** vstupní variabilitu. Vstupní CoV = 0,1 dává výstupní CoV $\approx 0{,}25$ pro $\sigma_{\max}$.
+**Důvod velkého rozptylu:** $\sigma_{\max}$ závisí kvadraticky na $h_3$ ($\sigma \propto 1/h_3^2$). Lognormální propagace přes mocninnou závislost **zesiluje** vstupní variabilitu. Vstupní CoV = 0,1 dává výstupní CoV $\approx 0{,}27$ pro $\sigma_{\max}$.
 
-**Závěr:** I přes deterministickou rezervu 25 % má součást **~21% pravděpodobnost překročení meze kluzu** — pravděpodobnostně **nevyhovuje** (oproti $\approx 40\,\%$ při původních $K_t$).
+**Závěr:** Součást **deterministicky projde** s minimální rezervou, ale stochasticky má **43% pravděpodobnost překročení meze kluzu** — z hlediska pravděpodobnostního inženýrství **nevyhovuje**.
 
 ---
 
@@ -439,31 +439,31 @@ alpha_sq_y = corrs_y**2 / (corrs_y**2).sum()
 
 | Veličina | $\rho(g_1, X_i)$ | $\alpha_i^2$ | Interpretace |
 |----------|------------------|--------------|--------------|
-| $h_3$ | $+0{,}714$ | $\mathbf{53{,}1\ \%}$ | **Dominantní** — výška kritického průřezu |
-| $R_e$ | $+0{,}438$ | $19{,}9\ \%$ | Mez kluzu |
-| $M$ | $-0{,}361$ | $13{,}6\ \%$ | Zatížení |
-| $t$ | $+0{,}359$ | $13{,}4\ \%$ | Tloušťka |
+| $h_3$ | $+0{,}685$ | $\mathbf{49{,}2\ \%}$ | **Dominantní** — výška kritického průřezu |
+| $R_e$ | $+0{,}357$ | $13{,}3\ \%$ | Mez kluzu |
+| $M$ | $-0{,}347$ | $12{,}6\ \%$ | Zatížení |
+| $K_{t2}$ | $-0{,}346$ | $12{,}5\ \%$ | Vrubový součinitel |
+| $t$ | $+0{,}345$ | $12{,}4\ \%$ | Tloušťka |
 
 > **Znaménka korelací:**
 > - **Kladné** ($h_3$, $R_e$, $t$): zvýšení této veličiny zvětší rezervu $g_1 = R_e - \sigma_{\max}$ → bezpečnější.
-> - **Záporné** ($M$): zvýšení této veličiny zmenší rezervu → nebezpečnější.
-> - $K_{t2} = 1$ je deterministicky pevné, do citlivostní analýzy nevstupuje.
+> - **Záporné** ($M$, $K_{t2}$): zvýšení této veličiny zmenší rezervu → nebezpečnější.
 
 ### 5.3 Interpretace dominance $h_3$
 
 Funkce poruchy:
 $$
-g_1 = R_e - K_{t2}\cdot\frac{6\,M}{t\,h_3^2} = R_e - \frac{6\,M}{t\,h_3^2}
+g_1 = R_e - K_{t2}\cdot\frac{6\,M}{t\,h_3^2}
 $$
 
-$h_3$ vstupuje **kvadraticky ve jmenovateli**, zatímco $M$ a $t$ jen **lineárně**. Citlivost na relativní změnu (logaritmická citlivost) je úměrná mocnině:
+$h_3$ vstupuje **kvadraticky ve jmenovateli**, zatímco $M$, $K_{t2}$, $t$ jen **lineárně**. Citlivost na relativní změnu (logaritmická citlivost) je úměrná mocnině:
 
 $$
 \frac{\partial \ln \sigma_{\max}}{\partial \ln h_3} = -2,\qquad
 \frac{\partial \ln \sigma_{\max}}{\partial \ln M} = +1,\qquad\ldots
 $$
 
-Proto $h_3$ s CoV = 0,1 zesiluje rozptyl výstupu **dvojnásobně** ve srovnání s lineárními vstupy → 4× větší příspěvek k varianci → 53 % vs ~13 %.
+Proto $h_3$ s CoV = 0,1 zesiluje rozptyl výstupu **dvojnásobně** ve srovnání s lineárními vstupy → 4× větší příspěvek k varianci → 49 % vs ~12 %.
 
 ### 5.4 Praktický důsledek
 
@@ -527,12 +527,20 @@ $$
 
 | | Výsledek |
 |---|----------|
-| **Kritické místo** | Úsek 3 ($h_3 = 10$ mm), bez koncentrace ($K_{t2} = 1$) |
-| **$\sigma_{\max}$ deterministicky** | $400\ \mathrm{MPa}$ (mezera $100\ \mathrm{MPa}$ do $R_e$, $k = 1{,}25$) |
+| **Kritické místo** | Vrub $r_2$ (přechod $h_2 \to h_3$) v úseku 3 |
+| **$\sigma_{\max}$ deterministicky** | $472\ \mathrm{MPa}$ (mezera $28\ \mathrm{MPa}$ do $R_e$) |
 | **$w$ deterministicky** | $0{,}800\ \mathrm{mm}$ (úsek 3 dává ~86 % příspěvku) |
-| **MS pružnosti — $P_f$** | $\mathbf{21{,}48\ \%}$ → součást **NEVYHOVUJE** |
+| **MS pružnosti — $P_f$** | $\mathbf{43{,}2\ \%}$ → součást **NEVYHOVUJE** |
 | **MS deformace — $P_f$** | $0{,}36\ \%$ → vyhovuje ($\beta = 2{,}69$) |
-| **Dominantní citlivost** | $h_3$ — 53 % rozptylu (kvadratická závislost) |
+| **Dominantní citlivost** | $h_3$ — 49 % rozptylu (kvadratická závislost) |
 | **Doporučení** | Zvětšit $h_3$ nebo zpřesnit jeho toleranci |
 
-**Hlavní poučení:** I při deterministické bezpečnosti $k = 1{,}25$ (rezerva 25 %) je **při běžných výrobních tolerancích ($\mathrm{CoV} = 10\,\%$) ~21 % pravděpodobnost dosažení meze kluzu**. Pravděpodobnostní přístup odhaluje slabé místo, které deterministický výpočet skrývá. Oproti původním Petersonovým hodnotám ($K_{t1}=1{,}68$, $K_{t2}=1{,}15$, $P_f \approx 40\,\%$) dává amesweb kalkulátor odlišný profil — vrub $r_2$ nezpůsobuje koncentraci, ale samotný úsek 3 je stále dominantní rizikový bod.
+**Hlavní poučení:** Deterministická bezpečnost $k = 1{,}059$ vypadá na hranici, ale **při běžných výrobních tolerancích ($\mathrm{CoV} = 10\,\%$) je 43 % pravděpodobnost plastické deformace**. Pravděpodobnostní přístup tedy odhaluje slabé místo, které deterministický výpočet skrývá.
+
+---
+
+## 9. Zdroj hodnot $K_t$
+
+Součinitelé tvaru $K_{t1}$ a $K_{t2}$ byly odečteny z online kalkulátoru:
+
+<https://mechanicalc.com/calculators/stress-concentration/#>

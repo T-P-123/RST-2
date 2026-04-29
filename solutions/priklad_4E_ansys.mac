@@ -87,7 +87,7 @@ NSORT,S,EQV
 NSORT,U,Y
 *GET,w_max_fem,SORT,,MAX
 
-/COM, Max von Mises stress = %sigma_max_fem% MPa  (analyt. 400 MPa u úseku 3, Kt2=1)
+/COM, Max von Mises stress = %sigma_max_fem% MPa  (analyt. 472 MPa u r2, Kt2=1.18)
 /COM, Max deflection       = %w_max_fem% mm       (analyt. 0.800 mm)
 
 ! Stochastika: ANSYS PDS / DesignXplorer Six Sigma

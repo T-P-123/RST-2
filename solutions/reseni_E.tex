@@ -137,6 +137,20 @@ $M(2^+)$ & $-8{,}60\unit{kN \cdot m}$ & těsně za momentem (skok $+20$) \\
 
 \subsection{Stochastická analýza -- Monte Carlo}
 
+\subsubsection{Princip metody Monte Carlo}
+
+Metoda Monte Carlo (MC) je numerická simulační technika, která umožňuje propagaci nejistoty vstupů do výstupní veličiny opakovaným výpočtem se~zatíženými náhodnými realizacemi. Místo jednoho deterministického výpočtu se~úloha řeší $N$-krát, přičemž v~každé realizaci jsou vstupy nezávisle taženy ze~svých pravděpodobnostních rozdělení. Empirické rozdělení výstupu (histogram, statistiky) pak aproximuje skutečné rozdělení odezvy.
+
+\medskip\noindent
+\textbf{Variační koeficient} (Coefficient of Variation) je bezrozměrná míra relativního rozptylu:
+\begin{equation}
+    \mathrm{CoV} = \frac{\sigma}{\mu}
+\end{equation}
+hodnota $\mathrm{CoV} = 0{,}1$ tedy znamená rozptyl $\pm 10\,\%$ kolem střední hodnoty.
+
+\medskip\noindent
+\textbf{Rozsah této analýzy:} cílem je propagace nejistoty zatížení do reakcí a~vnitřních sil, nikoli výpočet pravděpodobnosti poruchy ($P_f$) ani indexu spolehlivosti ($\beta$) -- ty vyžadují definici limitního stavu, který v~zadání není uveden.
+
 \subsubsection{Model nejistoty vstupů}
 
 Pouze \emph{zatížení} se uvažuje jako náhodná veličina (geometrie je deterministická). Variační koeficient $\mathrm{CoV} = 0{,}1$ a~normální rozdělení dávají:
@@ -145,18 +159,22 @@ Pouze \emph{zatížení} se uvažuje jako náhodná veličina (geometrie je dete
     F   \sim N(\mu{=}8;\;  \sigma{=}0{,}8), \quad
     q   \sim N(\mu{=}15;\; \sigma{=}1{,}5)
 \end{equation}
-kde směrodatná odchylka plyne ze~vztahu $\sigma_X = \mu_X \cdot \mathrm{CoV}$.
+kde směrodatná odchylka plyne ze~vztahu $\sigma_X = \mu_X \cdot \mathrm{CoV}$. Vzájemná závislost mezi $M_0$, $F$, $q$ se~neuvažuje (nezávislé veličiny). Reakce $F_{Ax}$ je deterministicky nulová ve~všech realizacích (žádné horizontální zatížení), proto v~MC nevystupuje.
 
 \subsubsection{Postup simulace}
 
 V~každé z~$N = 100\,000$ realizací byl proveden následující výpočet:
 \begin{enumerate}[nosep, label=(\arabic*)]
-    \item nezávislé tažení tří vzorků $M_0^{(k)}$, $F^{(k)}$, $q^{(k)}$ z~jejich rozdělení;
+    \item nezávislé tažení tří vzorků $M_0^{(k)}$, $F^{(k)}$, $q^{(k)}$ z~jejich rozdělení (NumPy \texttt{np.random.normal} s~pevným \texttt{seed = 42} pro reprodukovatelnost);
     \item dosazení do~stejných rovnic rovnováhy jako v~deterministickém případě, čímž se získají reakce $F_{Ay}^{(k)}$, $F_{By}^{(k)}$;
-    \item podmnožina $1\,000$ realizací byla použita k~výpočtu obálky $V(x)$, $M(x)$ pro získání pásu nejistoty na obrázku~\ref{fig:1E_diagram}.
+    \item náhodný podvýběr $1\,000$ realizací byl použit k~výpočtu obálky $V(x)$, $M(x)$ pro získání pásu nejistoty na obrázku~\ref{fig:1E_diagram}. \textbf{Obálka je definována jako bodové minimum a~maximum} přes podvýběr v~každém bodě $x$ (tj.~ne kvantily, ale extrémy realizací).
 \end{enumerate}
 
-\noindent Statistiky v~tabulce~\ref{tab:1E_mc} vznikly přímo z~vektorů $\{F_{Ay}^{(k)}\}_{k=1}^{N}$, $\{F_{By}^{(k)}\}_{k=1}^{N}$ jako výběrové průměry a~směrodatné odchylky:
+\medskip\noindent
+\textbf{Volba $N$:} přesnost výběrového průměru klesá jako $\hat{\sigma}/\sqrt{N}$. Pro $N = 10^5$ je relativní chyba odhadu $\hat{\mu}$ řádu $10^{-3}$, což je dostatečné pro ověření shody se~deterministickým řešením.
+
+\medskip\noindent
+Statistiky v~tabulce~\ref{tab:1E_mc} vznikly přímo z~vektorů $\{F_{Ay}^{(k)}\}_{k=1}^{N}$, $\{F_{By}^{(k)}\}_{k=1}^{N}$ jako výběrové průměry a~směrodatné odchylky (populační vzorec, rozdíl oproti~$1/(N-1)$ je při~$N=10^5$ zanedbatelný):
 \begin{equation}
     \hat{\mu}_{F_R} = \frac{1}{N}\sum_{k=1}^{N} F_R^{(k)},
     \qquad
@@ -181,7 +199,10 @@ $F_{By}$ & $\phantom{-}67{,}29$ & $5{,}88$ & $0{,}087$ \\
 \end{tabular}
 \end{table}
 
-\noindent Střední hodnoty se shodují s~deterministickým řešením (linearita rovnic v~$M_0$, $F$, $q$). Přibližně lineární propagace nejistoty zachovává vstupní $\mathrm{CoV} = 0{,}1$ u~$F_{Ay}$; nižší hodnota u~$F_{By}$ je důsledkem ``zprůměrování'' tří nezávislých zdrojů, které se ve~výrazu pro~$F_{By}$ sčítají s~kladnými znaménky.
+\noindent Střední hodnoty se shodují s~deterministickým řešením (linearita rovnic v~$M_0$, $F$, $q$). Přibližně lineární propagace nejistoty zachovává vstupní $\mathrm{CoV} = 0{,}1$ u~$F_{Ay}$; nižší hodnota u~$F_{By}$ je důsledkem ``zprůměrování'' tří nezávislých zdrojů, které se ve~výrazu pro~$F_{By}$ sčítají s~kladnými znaménky (rozptyl součtu = součet rozptylů, ale absolutní hodnota průměru roste rychleji).
+
+\medskip\noindent
+\textbf{Tvar histogramů} (obr.~\ref{fig:1E_hist}) je symetrický a~zvonovitý, což potvrzuje, že lineární kombinace nezávislých normálních vstupů je opět normální veličina. Pro tento konkrétní příklad by tedy postačoval i~analytický výpočet (sčítání rozptylů), MC zde slouží jako univerzální nástroj použitelný i~pro nelineární odezvy (srov.~příklad~2E, kde $I \propto h^3$).
 
 \begin{figure}[H]
 \centering
@@ -543,18 +564,43 @@ $t$ & $+0{,}343$ & 12{,}3 \\
 
 \subsection{Zadání}
 
-Součást se dvěma zápichy, na jedné straně přivařena k~základnímu rámu, na druhé straně se ho dotýká. Je zatížena souměrně střídavou silou. Stanovte časový průběh napětí ve vrubech.
+Součást se dvěma zápichy:
+\begin{itemize}[nosep]
+    \item \textbf{Vlevo:} pevný svar k~základnímu rámu (přenese tah i tlak).
+    \item \textbf{Vpravo:} kontakt s~rámem ($\delta = 0$) — přenese pouze tlak,
+          při tahu se rozevře.
+\end{itemize}
+
+Vnější souměrně střídavá síla $F = \pm 1000\unit{N}$. Stanovte časový průběh napětí ve vrubech.
 
 \begin{itemize}[nosep]
     \item Všechny rozměry $\pm 0{,}5\unit{mm}$
-    \item $F = +1000 \div 0\unit{N}$ (pulzující zatížení)
     \item Hlavní průměr $D = 50\unit{mm}$, průměr v~zápichu $d = 35\unit{mm}$
     \item Poloměr zápichu $r = 5\unit{mm}$
     \item Délka $L = 500\unit{mm}$
-    \item Předpětí $F_0 = 1{,}4 \times 10^5\unit{N}$
+    \item Údaj $1{,}4 \times 10^5\unit{N}$ z výkresu — význam neověřen
+          (pravděpodobně tuhost kontaktu nebo značení svaru, ne axiální předpětí).
 \end{itemize}
 
 \subsection{Deterministické řešení}
+
+\subsubsection{Vliv jednostranného kontaktu — degenerace cyklu}
+
+Asymetrická vazba (svar vs.~kontakt) rozštěpí cyklus síly $F$ na dvě poloviny:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Polosmysl $F$} & \textbf{Pravý kontakt} & \textbf{Vnitřní síla v~prutu} \\
+\midrule
+$F$ táhne (od rámu) & rozevřen        & $N = F = 1000\unit{N}$ (tah) \\
+$F$ tlačí (do rámu) & sevřen, přenese & $N = 0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Souměrně střídavé vnější zatížení tedy degeneruje na \textbf{pulzující (míjivý) cyklus} ve vrubu:
+$$\sigma_{\min} = 0, \quad R = \sigma_{\min}/\sigma_{\max} = 0.$$
 
 \subsubsection{Geometrie zápichu}
 
@@ -565,31 +611,30 @@ Součást se dvěma zápichy, na jedné straně přivařena k~základnímu rámu
 
 \subsubsection{Součinitel koncentrace napětí}
 
-Neuberova aproximace:
+Geometrické poměry pro Petersonův graf (Chart 2.19, kruhový hřídel s~U-vrubem, axiální tah):
+\begin{align}
+    \frac{D}{d} &= \frac{50}{35} = 1{,}429, \qquad \frac{r}{d} = \frac{5}{35} = 0{,}143
+\end{align}
+
+Z~Petersonova diagramu:
 \begin{equation}
-    K_t = 1 + 2\sqrt{\frac{t_{\mathrm{depth}}}{r}} = 1 + 2\sqrt{\frac{7{,}5}{5}} = \boxed{3{,}449}
+    \boxed{K_t \approx 2{,}10} \quad (\text{rozsah } 2{,}0\text{--}2{,}2)
 \end{equation}
 
-\subsubsection{Napětí bez předpětí}
+\textbf{Pozn.:} Neuberova aproximace $K_t = 1 + 2\sqrt{t/r} = 3{,}449$ je pro tuto geometrii konzervativní horní mez. Petersonův graf vychází z~přesnějšího řešení teorie pružnosti a~je standardně používán.
+
+\subsubsection{Napětí v~kořeni vrubu}
 
 \begin{align}
     \sigma_{\mathrm{nom,max}} &= \frac{F_{\max}}{A_d} = \frac{1000}{962{,}1} = 1{,}039\unit{MPa} \\
-    \sigma_{\max} &= K_t \cdot \sigma_{\mathrm{nom,max}} = 3{,}449 \cdot 1{,}039 = \boxed{3{,}585\unit{MPa}} \\
-    \sigma_{\min} &= 0\unit{MPa} \quad (\text{pulzující, } R = 0)
+    \sigma_{\max} &= K_t \cdot \sigma_{\mathrm{nom,max}} = 2{,}10 \cdot 1{,}039 = \boxed{2{,}18\unit{MPa}} \\
+    \sigma_{\min} &= 0\unit{MPa} \quad (R = 0)
 \end{align}
 
 Střední napětí a~amplituda:
 \begin{align}
-    \sigma_m &= \frac{\sigma_{\max} + \sigma_{\min}}{2} = 1{,}793\unit{MPa} \\
-    \sigma_a &= \frac{\sigma_{\max} - \sigma_{\min}}{2} = 1{,}793\unit{MPa}
-\end{align}
-
-\subsubsection{Napětí s~předpětím}
-
-\begin{align}
-    \sigma_{\max} &= K_t \cdot \frac{F_0 + F_{\max}}{A_d} = 3{,}449 \cdot \frac{141\,000}{962{,}1} = \boxed{505{,}5\unit{MPa}} \\
-    \sigma_{\min} &= K_t \cdot \frac{F_0}{A_d} = 3{,}449 \cdot \frac{140\,000}{962{,}1} = 501{,}9\unit{MPa} \\
-    \sigma_m &= 503{,}7\unit{MPa}, \quad \sigma_a = 1{,}79\unit{MPa}
+    \sigma_m &= \frac{\sigma_{\max} + \sigma_{\min}}{2} = 1{,}09\unit{MPa} \\
+    \sigma_a &= \frac{\sigma_{\max} - \sigma_{\min}}{2} = 1{,}09\unit{MPa}
 \end{align}
 
 \subsection{Časový průběh}
@@ -600,7 +645,7 @@ Pro pulzující zatížení $F(t) = \frac{F_{\max}}{2}\left(1 - \cos 2\pi f t\ri
     \sigma(t) = K_t \cdot \frac{F(t)}{A_d} = \frac{K_t \cdot F_{\max}}{2 A_d}\left(1 - \cos 2\pi f t\right)
 \end{equation}
 
-Napětí harmonicky kmitá mezi $0$ a~$\sigma_{\max}$ s~poměrem asymetrie $R = 0$.
+Napětí harmonicky kmitá mezi $0$ a~$\sigma_{\max} \approx 2{,}18\unit{MPa}$ s~poměrem asymetrie $R = 0$, perioda shodná s~periodou síly $F$.
 
 \subsection{Stochastická analýza}
 
@@ -613,14 +658,14 @@ Rozměry s~tolerancí $\pm 0{,}5\unit{mm}$ $\Rightarrow$ $\sigma_{\mathrm{dim}} 
 \toprule
 \textbf{Veličina} & $\boldsymbol{\mu}$ & $\boldsymbol{\sigma}$ & \textbf{CoV} & \textbf{95\% CI} \\
 \midrule
-$\sigma_{\max}$ [MPa] & 3{,}587 & 0{,}192 & 0{,}054 & $[3{,}21;\; 3{,}97]$ \\
-$\sigma_a$ [MPa] & 1{,}793 & 0{,}096 & 0{,}054 & --- \\
-$K_t$ [-] & 3{,}450 & 0{,}045 & 0{,}013 & --- \\
+$\sigma_{\max}$ [MPa] & 2{,}183 & 0{,}034 & 0{,}015 & $[2{,}12;\; 2{,}25]$ \\
+$\sigma_a$ [MPa] & 1{,}092 & 0{,}017 & 0{,}015 & --- \\
+$K_t$ [-] & 2{,}100 & 0{,}020 & 0{,}010 & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Variabilita napětí je nízká ($\mathrm{CoV} = 5{,}4\%$) díky malým tolerancím rozměrů.
+Variabilita napětí je velmi nízká ($\mathrm{CoV} \approx 1{,}5\%$) díky malým tolerancím rozměrů a~slabé citlivosti $K_t$ na geometrii v~okolí pracovního bodu.
 
 \begin{figure}[H]
 \centering
@@ -657,7 +702,7 @@ Variabilita napětí je nízká ($\mathrm{CoV} = 5{,}4\%$) díky malým toleranc
 \midrule
 \textbf{4E} & $k_{\mathrm{yield}} = 1{,}087$, $K_{t2} = 1{,}15$, $\sigma_{\max} = 460\unit{MPa}$ & $P_f = 39{,}6\%$, $\beta = 0{,}26$ (nevyhoví) & 0{,}1 \\
 \midrule
-\textbf{5E} & $\sigma_{\max} = 3{,}59\unit{MPa}$, $K_t = 3{,}45$ & CoV napětí: $0{,}054$ & $\pm 0{,}5\unit{mm}$ \\
+\textbf{5E} & $\sigma_{\max} = 2{,}18\unit{MPa}$, $K_t = 2{,}10$ (Peterson), $R = 0$ & CoV napětí: $0{,}015$ & $\pm 0{,}5\unit{mm}$ \\
 \bottomrule
 \end{tabular}
 \end{table}

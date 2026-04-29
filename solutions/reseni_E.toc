@@ -7,41 +7,42 @@
 \contentsline {subsubsection}{\numberline {1.2.3}Rovnice rovnováhy a~výpočet reakcí}{3}{subsubsection.1.2.3}%
 \contentsline {subsubsection}{\numberline {1.2.4}Klíčové hodnoty průběhů vnitřních sil}{3}{subsubsection.1.2.4}%
 \contentsline {subsection}{\numberline {1.3}Stochastická analýza -- Monte Carlo}{4}{subsection.1.3}%
-\contentsline {subsubsection}{\numberline {1.3.1}Model nejistoty vstupů}{4}{subsubsection.1.3.1}%
-\contentsline {subsubsection}{\numberline {1.3.2}Postup simulace}{4}{subsubsection.1.3.2}%
-\contentsline {subsubsection}{\numberline {1.3.3}Výsledky}{4}{subsubsection.1.3.3}%
-\contentsline {section}{\numberline {2}Příklad 2E -- Osový kvadratický moment nesymetrického průřezu}{6}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Zadání}{6}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Geometrie průřezu}{6}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Deterministické řešení}{6}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Plocha průřezu}{6}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Těžiště}{6}{subsubsection.2.3.2}%
-\contentsline {subsubsection}{\numberline {2.3.3}Těžišťové kvadratické momenty (Steinerova věta)}{6}{subsubsection.2.3.3}%
-\contentsline {subsubsection}{\numberline {2.3.4}Kvadratické momenty k~vnějším osám (okraje obalového obdélníku)}{7}{subsubsection.2.3.4}%
-\contentsline {subsection}{\numberline {2.4}Stochastická analýza}{7}{subsection.2.4}%
-\contentsline {section}{\numberline {3}Příklad 3E -- Pravděpodobnost bezporuchového provozu klínových řemenů}{8}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Zadání}{8}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Statistický popis dat}{8}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Analytický výpočet}{8}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Monte Carlo simulace}{9}{subsection.3.4}%
-\contentsline {section}{\numberline {4}Příklad 4E -- MS pružnosti a deformace stupňovitého prutu}{10}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Zadání}{10}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Deterministické řešení}{10}{subsection.4.2}%
-\contentsline {subsubsection}{\numberline {4.2.1}Nominální napětí v~jednotlivých úsecích}{10}{subsubsection.4.2.1}%
-\contentsline {subsubsection}{\numberline {4.2.2}Součinitelé tvaru (Peterson, stupňovitý plochý prut v~ohybu)}{10}{subsubsection.4.2.2}%
-\contentsline {subsubsection}{\numberline {4.2.3}Maximální napětí}{10}{subsubsection.4.2.3}%
-\contentsline {subsubsection}{\numberline {4.2.4}Průhyb (Mohrova analogie pro stupňovitý prut)}{10}{subsubsection.4.2.4}%
-\contentsline {subsection}{\numberline {4.3}Stochastická analýza (Monte Carlo)}{11}{subsection.4.3}%
-\contentsline {subsubsection}{\numberline {4.3.1}MS pružnosti: $g_1 = R_e - \sigma _{\max } > 0$}{11}{subsubsection.4.3.1}%
-\contentsline {subsubsection}{\numberline {4.3.2}MS deformace: $g_2 = w_{\max } - w > 0$}{11}{subsubsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.4}Citlivostní analýza}{11}{subsection.4.4}%
-\contentsline {section}{\numberline {5}Příklad 5E -- Časový průběh napětí ve vrubech}{13}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Zadání}{13}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Deterministické řešení}{13}{subsection.5.2}%
-\contentsline {subsubsection}{\numberline {5.2.1}Geometrie zápichu}{13}{subsubsection.5.2.1}%
-\contentsline {subsubsection}{\numberline {5.2.2}Součinitel koncentrace napětí}{13}{subsubsection.5.2.2}%
-\contentsline {subsubsection}{\numberline {5.2.3}Napětí bez předpětí}{13}{subsubsection.5.2.3}%
-\contentsline {subsubsection}{\numberline {5.2.4}Napětí s~předpětím}{13}{subsubsection.5.2.4}%
-\contentsline {subsection}{\numberline {5.3}Časový průběh}{13}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Stochastická analýza}{14}{subsection.5.4}%
-\contentsline {section}{\numberline {6}Souhrnná tabulka výsledků}{16}{section.6}%
+\contentsline {subsubsection}{\numberline {1.3.1}Princip metody Monte Carlo}{4}{subsubsection.1.3.1}%
+\contentsline {subsubsection}{\numberline {1.3.2}Model nejistoty vstupů}{4}{subsubsection.1.3.2}%
+\contentsline {subsubsection}{\numberline {1.3.3}Postup simulace}{4}{subsubsection.1.3.3}%
+\contentsline {subsubsection}{\numberline {1.3.4}Výsledky}{5}{subsubsection.1.3.4}%
+\contentsline {section}{\numberline {2}Příklad 2E -- Osový kvadratický moment nesymetrického průřezu}{7}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Zadání}{7}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Geometrie průřezu}{7}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Deterministické řešení}{7}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Plocha průřezu}{7}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Těžiště}{7}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}Těžišťové kvadratické momenty (Steinerova věta)}{7}{subsubsection.2.3.3}%
+\contentsline {subsubsection}{\numberline {2.3.4}Kvadratické momenty k~vnějším osám (okraje obalového obdélníku)}{8}{subsubsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.4}Stochastická analýza}{8}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Příklad 3E -- Pravděpodobnost bezporuchového provozu klínových řemenů}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Zadání}{9}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Statistický popis dat}{9}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Analytický výpočet}{9}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Monte Carlo simulace}{10}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Příklad 4E -- MS pružnosti a deformace stupňovitého prutu}{11}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Zadání}{11}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Deterministické řešení}{11}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Nominální napětí v~jednotlivých úsecích}{11}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}Součinitelé tvaru (Peterson, stupňovitý plochý prut v~ohybu)}{11}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}Maximální napětí}{11}{subsubsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.4}Průhyb (Mohrova analogie pro stupňovitý prut)}{11}{subsubsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.3}Stochastická analýza (Monte Carlo)}{12}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}MS pružnosti: $g_1 = R_e - \sigma _{\max } > 0$}{12}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}MS deformace: $g_2 = w_{\max } - w > 0$}{12}{subsubsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.4}Citlivostní analýza}{12}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Příklad 5E -- Časový průběh napětí ve vrubech}{14}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Zadání}{14}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Deterministické řešení}{14}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Vliv jednostranného kontaktu — degenerace cyklu}{14}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Geometrie zápichu}{14}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Součinitel koncentrace napětí}{14}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}Napětí v~kořeni vrubu}{14}{subsubsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.3}Časový průběh}{15}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Stochastická analýza}{15}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Souhrnná tabulka výsledků}{17}{section.6}%

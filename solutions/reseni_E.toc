@@ -39,10 +39,11 @@
 \contentsline {section}{\numberline {5}Příklad 5E -- Časový průběh napětí ve vrubech}{14}{section.5}%
 \contentsline {subsection}{\numberline {5.1}Zadání}{14}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Deterministické řešení}{14}{subsection.5.2}%
-\contentsline {subsubsection}{\numberline {5.2.1}Vliv jednostranného kontaktu — degenerace cyklu}{14}{subsubsection.5.2.1}%
-\contentsline {subsubsection}{\numberline {5.2.2}Geometrie zápichu}{14}{subsubsection.5.2.2}%
-\contentsline {subsubsection}{\numberline {5.2.3}Součinitel koncentrace napětí}{14}{subsubsection.5.2.3}%
-\contentsline {subsubsection}{\numberline {5.2.4}Napětí v~kořeni vrubu}{14}{subsubsection.5.2.4}%
-\contentsline {subsection}{\numberline {5.3}Časový průběh}{15}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Stochastická analýza}{15}{subsection.5.4}%
-\contentsline {section}{\numberline {6}Souhrnná tabulka výsledků}{17}{section.6}%
+\contentsline {subsubsection}{\numberline {5.2.1}Mechanika jednostranného kontaktu — dva zatěžovací stavy}{14}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Stav A — staticky neurčitá úloha (kontakt aktivní)}{14}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Stav B — staticky určitá úloha (kontakt rozevřen)}{15}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}Součinitel koncentrace napětí}{15}{subsubsection.5.2.4}%
+\contentsline {subsubsection}{\numberline {5.2.5}Lokální napětí ve vrubech}{15}{subsubsection.5.2.5}%
+\contentsline {subsection}{\numberline {5.3}Časový průběh napětí}{15}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Stochastická analýza}{16}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Souhrnná tabulka výsledků}{18}{section.6}%

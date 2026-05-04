@@ -126,24 +126,36 @@ def lognormal_sample(mean, cov, n):
     mu_ln, sig_ln = lognormal_params(mean, cov)
     return np.random.lognormal(mu_ln, sig_ln, n)
 
-M_mc   = lognormal_sample(M_Nmm, CoV, N_sim)
-Re_mc  = lognormal_sample(R_e_mean, CoV, N_sim)
-wm_mc  = lognormal_sample(w_max_mean, CoV, N_sim)
-h3_mc  = lognormal_sample(h3, CoV, N_sim)
-t_mc   = lognormal_sample(t, CoV, N_sim)
-Kt2_mc = lognormal_sample(Kt2, CoV, N_sim)
-L_mc   = lognormal_sample(L1+L2+L3, CoV, N_sim)
-E_mc   = lognormal_sample(E, CoV, N_sim)
+M_mc    = lognormal_sample(M_Nmm, CoV, N_sim)
+Re_mc   = lognormal_sample(R_e_mean, CoV, N_sim)
+wm_mc   = lognormal_sample(w_max_mean, CoV, N_sim)
+h1_mc   = lognormal_sample(h1, CoV, N_sim)
+h2_mc   = lognormal_sample(h2, CoV, N_sim)
+h3_mc   = lognormal_sample(h3, CoV, N_sim)
+t_mc    = lognormal_sample(t, CoV, N_sim)
+Kt1_mc  = lognormal_sample(Kt1, CoV, N_sim)
+Kt2_mc  = lognormal_sample(Kt2, CoV, N_sim)
+L1_mc   = lognormal_sample(L1, CoV, N_sim)
+L2_mc   = lognormal_sample(L2, CoV, N_sim)
+L3_mc   = lognormal_sample(L3, CoV, N_sim)
+E_mc    = lognormal_sample(E, CoV, N_sim)
 
-# σ_max v kritickém vrubu r2
+# σ_max — v obou vrubech, max(σ_max,1, σ_max,2) per vzorek
+W2_mc = t_mc * h2_mc**2 / 6.0
 W3_mc = t_mc * h3_mc**2 / 6.0
-sigma_max_mc = Kt2_mc * M_mc / W3_mc
+sigma_max1_mc = Kt1_mc * M_mc / W2_mc   # vrub r1
+sigma_max2_mc = Kt2_mc * M_mc / W3_mc   # vrub r2
+sigma_max_mc = np.maximum(sigma_max1_mc, sigma_max2_mc)
 
-# Stochastický průhyb stejným vzorcem jako deterministický (stochastické h3, t, E, M):
+# Stochastický průhyb — všechny veličiny per vzorek:
+L_tot_mc = L1_mc + L2_mc + L3_mc
+J1_mc = section_integral(0,             L1_mc,         L_tot_mc)
+J2_mc = section_integral(L1_mc,         L1_mc + L2_mc, L_tot_mc)
+J3_mc = section_integral(L1_mc + L2_mc, L_tot_mc,      L_tot_mc)
+I1_mc = t_mc * h1_mc**3 / 12.0
+I2_mc = t_mc * h2_mc**3 / 12.0
 I3_mc = t_mc * h3_mc**3 / 12.0
-I1_det = t_mc * h1**3 / 12.0
-I2_det = t_mc * h2**3 / 12.0
-w_mc = (M_mc / E_mc) * (J1/I1_det + J2/I2_det + J3/I3_mc)
+w_mc = (M_mc / E_mc) * (J1_mc/I1_mc + J2_mc/I2_mc + J3_mc/I3_mc)
 
 # MS pružnosti
 g_yield = Re_mc - sigma_max_mc
@@ -175,12 +187,14 @@ print(f"  β_deform ≈ {beta_deform:.3f}")
 # 3. CITLIVOSTNÍ ANALÝZA
 # ============================================================
 
-variables_yield = {
-    'h_3': h3_mc, 'M': M_mc, 'K_t2': Kt2_mc, 't': t_mc, 'R_e': Re_mc,
+all_vars = {
+    'R_e': Re_mc, 'M': M_mc, 'E': E_mc, 't': t_mc,
+    'h_1': h1_mc, 'h_2': h2_mc, 'h_3': h3_mc,
+    'L_1': L1_mc, 'L_2': L2_mc, 'L_3': L3_mc,
+    'K_t1': Kt1_mc, 'K_t2': Kt2_mc, 'w_max': wm_mc,
 }
-variables_deform = {
-    'h_3': h3_mc, 'L': L_mc, 'M': M_mc, 't': t_mc, 'E': E_mc, 'w_max': wm_mc,
-}
+variables_yield = all_vars
+variables_deform = all_vars
 
 corrs_y = np.array([np.corrcoef(v, g_yield)[0, 1] for v in variables_yield.values()])
 alpha_sq_y = corrs_y**2 / (corrs_y**2).sum()
@@ -225,19 +239,22 @@ ax.set_title(f'MS deformace: P_f = {P_deform_failure*100:.4f}%')
 ax.legend(); ax.grid(True, alpha=0.3)
 
 ax = axes[1, 0]
-ax.hist(g_yield, bins=100, density=True, alpha=0.7, color='steelblue', edgecolor='white')
-ax.axvline(0, color='red', linewidth=2, linestyle='--', label='g = 0 (porucha)')
-ax.set_xlabel('g = R_e − σ_max [MPa]'); ax.set_ylabel('Hustota')
-ax.set_title('Funkce poruchy — MS pružnosti')
-ax.legend(); ax.grid(True, alpha=0.3)
-
-ax = axes[1, 1]
 names_y = list(variables_yield.keys())
 colors_y = ['red' if c < 0 else 'blue' for c in corrs_y]
 ax.barh(names_y, alpha_sq_y * 100, color=colors_y, alpha=0.7, edgecolor='white')
 ax.set_xlabel('Příspěvek k rozptylu [%]')
-ax.set_title('Citlivostní analýza — MS pružnosti')
+ax.set_title('Citlivostní analýza — MS pružnosti (g₁)')
 ax.grid(True, alpha=0.3)
+ax.invert_yaxis()
+
+ax = axes[1, 1]
+names_d = list(variables_deform.keys())
+colors_d = ['red' if c < 0 else 'blue' for c in corrs_d]
+ax.barh(names_d, alpha_sq_d * 100, color=colors_d, alpha=0.7, edgecolor='white')
+ax.set_xlabel('Příspěvek k rozptylu [%]')
+ax.set_title('Citlivostní analýza — MS deformace (g₂)')
+ax.grid(True, alpha=0.3)
+ax.invert_yaxis()
 
 plt.tight_layout()
 plt.savefig('/Users/tomas/Projects/RST/solutions/priklad_4E_vysledky.png', dpi=150, bbox_inches='tight')

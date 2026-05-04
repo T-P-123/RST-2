@@ -146,13 +146,13 @@ $$
 
 ### 3.1 Průřezové charakteristiky
 
-Pro každý úsek dosadíme do vzorců $W = t\,h^2/6$, $I = t\,h^3/12$ s $t = 15\ \mathrm{mm}$:
+Pro každý úsek dosadíme do vzorců $W = \dfrac{t\,h^2}{6}$, $I = \dfrac{t\,h^3}{12}$ s $t = 15\ \mathrm{mm}$:
 
 | Úsek | $h_i$ [mm] | $W_i$ [mm³] | $I_i$ [mm⁴] |
 |------|-----------|-------------|-------------|
-| 1 | 45 | $15\cdot 45^2/6 = 5\,062{,}5$ | $15\cdot 45^3/12 = 113\,906$ |
-| 2 | 30 | $15\cdot 30^2/6 = 2\,250{,}0$ | $15\cdot 30^3/12 = 33\,750$ |
-| 3 | 10 | $15\cdot 10^2/6 = 250{,}0$ | $15\cdot 10^3/12 = 1\,250$ |
+| 1 | 45 | $\dfrac{15\cdot 45^2}{6} = 5\,062{,}5$ | $\dfrac{15\cdot 45^3}{12} = 113\,906$ |
+| 2 | 30 | $\dfrac{15\cdot 30^2}{6} = 2\,250{,}0$ | $\dfrac{15\cdot 30^3}{12} = 33\,750$ |
+| 3 | 10 | $\dfrac{15\cdot 10^2}{6} = 250{,}0$ | $\dfrac{15\cdot 10^3}{12} = 1\,250$ |
 
 > **Pozorování:** $W_3$ je **20× menší** než $W_1$ a $I_3$ je **91× menší** než $I_1$ — úsek 3 je „slabé místo" jak pro pevnost, tak pro tuhost.
 

@@ -1,0 +1,555 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[czech]{babel}
+\usepackage{lmodern}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!60!black
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small RST -- Detailní postup příkladu 5E}
+\fancyhead[R]{\small Akademický rok 2025/2026}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\unit}[1]{\,\mathrm{#1}}
+\newcommand{\E}[1]{\cdot 10^{#1}}
+
+\newenvironment{poznamka}[1][Poznámka]{%
+    \par\medskip\noindent\begin{tabular}{@{}|p{0.96\linewidth}@{}}\hline
+    \textbf{#1:}\\[-0.4ex]\itshape\ignorespaces}{%
+    \\\hline\end{tabular}\par\medskip}
+
+\title{\textbf{Příklad 5E -- Detailní postup řešení}\\
+       \large Časový průběh napětí ve vrubech rotační hřídele\\
+       s~jednostranným kontaktem}
+\author{RST -- Pružnost a~pevnost}
+\date{Akademický rok 2025/2026}
+
+\begin{document}
+
+\maketitle
+
+\noindent\textbf{Téma:} Časový průběh napětí ve vrubech rotační hřídele s~jednostranným kontaktem, axiálně zatížené střídavou silou.\\
+\textbf{Zdroj:} \texttt{solutions/reseni\_E.pdf} (sekce 5) a~\texttt{solutions/priklad\_5E.py}
+
+\tableofcontents
+\vspace{1em}
+
+\hrule
+\vspace{1em}
+
+%% ============================================================
+\section{Co se v~této úloze počítá (rychlý přehled)}
+
+Máme \textbf{rotační hřídel} (válec) zatížený \textbf{střídavou osovou silou} (tah $\leftrightarrow$ tlak) -- síla mění znaménko jako obdélníková vlna v~čase. Hřídel má \textbf{dva zápichy} (úzké zúžení průměru), v~nichž vzniká \textbf{koncentrace napětí}.
+
+Speciální detail: \textbf{pravý konec není přivařený k~pevné stěně, jen se o~ni opírá}. Posuv do stěny tedy možný není (stěna brání), ale posuv od stěny ano (hřídel se může odlepit). Tomu se říká \textbf{jednostranný kontakt}.
+
+Důsledek: úloha se musí spočítat \textbf{dvakrát} -- jednou pro fázi „síla tlačí do stěny" (kontakt aktivní), podruhé pro fázi „síla táhne od stěny" (kontakt rozevřen). V~každé fázi vyjdou \textbf{jiné vnitřní síly} v~hřídeli, a~tedy i~jiné napětí ve vrubech.
+
+\textbf{Cíl:}
+\begin{enumerate}[nosep]
+    \item \textbf{Deterministicky} spočítat napětí v~obou vrubech v~obou stavech zatížení a~popsat jejich časový průběh.
+    \item \textbf{Stochasticky} (Monte Carlo) zjistit, jak rozptyl rozměrů (tolerance $\pm 0{,}5\unit{mm}$) ovlivní napětí.
+    \item \textbf{Vykreslit Haighův diagram} ($\sigma_a$ vs $\sigma_m$) a~posoudit únavu vůči Goodmanově přímce.
+\end{enumerate}
+
+%% ============================================================
+\section{Zadání úlohy}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{priklad_5E_zadani.png}
+\caption{Zadání: rotační hřídel se dvěma zápichy a~jednostranným kontaktem vpravo, F~$=\pm 1{,}4\E{5}\unit{N}$.}
+\end{figure}
+
+\subsection{Geometrie hřídele}
+
+Hřídel celkové délky $L_{\mathrm{tot}} = 820\unit{mm}$, složená ze~5~úseků (zleva doprava):
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccccl}
+\toprule
+\textbf{Úsek} & \textbf{Délka [mm]} & \textbf{Průměr} & \textbf{Popis} \\
+\midrule
+1 & 200 & $D = 50\unit{mm}$ & první válec \\
+2 & 10  & $d = 35\unit{mm}$ & \textbf{levý zápich} (vrub) \\
+3 & 400 & $D = 50\unit{mm}$ & střední válec \\
+4 & 10  & $d = 35\unit{mm}$ & \textbf{pravý zápich} (vrub) \\
+5 & 200 & $D = 50\unit{mm}$ & poslední válec \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}[nosep]
+    \item Poloměr zaoblení dna zápichu: $r = 5\unit{mm}$ (oba vruby).
+    \item Síla F~působí v~poloze $x_F = 500\unit{mm}$ od levého vetknutí (uprostřed středního úseku, mezi vruby).
+    \item Levý vrub: $x \in [200; 210]\unit{mm}$ -- \textbf{před} silou.
+    \item Pravý vrub: $x \in [610; 620]\unit{mm}$ -- \textbf{za} silou.
+\end{itemize}
+
+\subsection{Uložení}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Konec} & \textbf{Vazba} & \textbf{Co přenáší} \\
+\midrule
+Vlevo ($x=0$)   & pevné vetknutí & tah i~tlak \\
+Vpravo ($x=820$) & jednostranný kontakt se stěnou ($\delta=0$) & \textbf{pouze tlak} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{poznamka}[Klíčové]
+Pravá stěna neumí táhnout. Pokud by reakce vyšla kladná (tažná), vyhodíme ji a~hřídel se chová, jako by vpravo nebyl podepřený.
+\end{poznamka}
+
+\subsection{Zatížení}
+
+Obdélníková střídavá osová síla:
+\begin{equation}
+F(t) = \pm 1{,}4\E{5}\unit{N} = \pm 140\unit{kN}
+\end{equation}
+
+Tolerance: $+1000 / -0\unit{N}$ (tj. $F \in \langle 140\,000;\,141\,000\rangle\unit{N}$ v~absolutní hodnotě). Konvence: $F > 0$ $\Rightarrow$ síla míří doprava (do stěny). $F < 0$ $\Rightarrow$ síla míří doleva (od stěny).
+
+Tolerance všech rozměrů: $\pm 0{,}5\unit{mm}$.
+
+\subsection{Co se má spočítat}
+
+\begin{itemize}[nosep]
+    \item Časový průběh $\sigma(t)$ v~levém i~pravém vrubu.
+    \item $\sigma_{\max}$, $\sigma_{\min}$, amplituda $\sigma_a$, střední napětí $\sigma_m$ a~$R = \sigma_{\min}/\sigma_{\max}$ v~každém vrubu.
+    \item Statistiky napětí (Monte Carlo, 100\,000 simulací).
+    \item Haighův diagram s~Goodmanovou přímkou ($R_e = 500\unit{MPa}$, $\sigma_c = 300\unit{MPa}$).
+\end{itemize}
+
+%% ============================================================
+\section{Klíčové pojmy a~vzorce (vysvětlení od základu)}
+
+\subsection{Osové napětí v~prostém prutu}
+
+Pro plný kruhový průřez o~průměru $d$:
+\begin{equation}
+A = \frac{\pi d^2}{4},\qquad \sigma_{\mathrm{nom}} = \frac{N}{A}
+\end{equation}
+kde $N$ je vnitřní osová síla (tah $+$, tlak $-$) a~$\sigma_{\mathrm{nom}}$ je \textbf{nominální} (průměrné) napětí v~průřezu.
+
+\subsection{Součinitel koncentrace napětí $K_t$}
+
+Vrub (zápich, rádius, otvor) způsobuje \textbf{lokální zvýšení napětí} na dně vrubu nad nominální hodnotu:
+\begin{equation}
+\sigma_{\max} = K_t \cdot \sigma_{\mathrm{nom}}
+\end{equation}
+
+$K_t$ závisí jen na \textbf{geometrii} (poměry $D/d$ a~$r/d$), nikoliv na materiálu ani zatížení. Hodnoty se odečítají z~\textbf{Petersonových grafů} -- pro náš případ (kruhový hřídel s~U-vrubem v~axiálním tahu, Chart~2.19):
+\begin{equation}
+\frac{D}{d} = \frac{50}{35} = 1{,}429,\qquad \frac{r}{d} = \frac{5}{35} = 0{,}143 \quad\Rightarrow\quad \boxed{K_t \approx 2{,}10}
+\end{equation}
+
+\begin{poznamka}[Intuice]
+Ostrý vrub (malé $r$) napětí silně zvedá. Náš poměr $r/d = 0{,}143$ je střední -- proto $K_t \approx 2$.
+\end{poznamka}
+
+\begin{poznamka}[Alternativa]
+Neuberova aproximace $K_t = 1 + 2\sqrt{t/r}$ (kde $t = (D-d)/2 = 7{,}5\unit{mm}$) dá $K_t \approx 3{,}45$ -- je konzervativní (větší). Petersonův graf je přesnější, používáme tedy $2{,}10$.
+\end{poznamka}
+
+\subsection{Staticky určitá vs.~neurčitá úloha}
+
+\begin{itemize}[nosep]
+    \item \textbf{Staticky určitá:} počet neznámých reakcí $\le$ počet rovnic rovnováhy. Stačí Newton.
+    \item \textbf{Staticky neurčitá:} víc reakcí než rovnic $\to$ musíme přidat \textbf{podmínku kompatibility} (geometrické omezení deformací).
+\end{itemize}
+
+Naše hřídel s~\textbf{oboustranným} vetknutím by byla 1$\times$ staticky neurčitá. Náš \textbf{jednostranný kontakt} to dělá ještě zajímavější:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Smysl síly $F$} & \textbf{Pravá stěna} & \textbf{Úloha} \\
+\midrule
+$F > 0$ (do stěny)  & kontakt aktivní  & \textbf{staticky neurčitá} \\
+$F < 0$ (od stěny)  & kontakt rozevřen & \textbf{staticky určitá} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Osová poddajnost prutu}
+
+Délka úseku $L$ o~průřezu $A$ pod osovou silou $N$ se prodlouží o:
+\begin{equation}
+\Delta L = \frac{N\cdot L}{E\cdot A}
+\end{equation}
+
+Pro prut složený z~více úseků se prodloužení sčítají. Definujeme \textbf{poddajnost} $C$ (násobenou modulem $E$, který se vykrátí):
+\begin{equation}
+C\cdot E = \sum_i \frac{L_i}{A_i}
+\end{equation}
+
+Pro \textbf{levou část} (od vetknutí k~místu síly, $x \in [0; x_F]$):
+\begin{equation}
+C_L\cdot E = \frac{L_{D,\mathrm{lev}}}{A_D} + \frac{L_{d,\mathrm{lev}}}{A_d}
+\end{equation}
+
+Analogicky pro \textbf{pravou část} (od síly ke konci, $x \in [x_F; L_{\mathrm{tot}}]$).
+
+\subsection{Charakteristiky cyklického zatížení}
+
+Pro napětí, které mezi $\sigma_{\max}$ a~$\sigma_{\min}$ střídá hodnoty, definujeme:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llp{6cm}}
+\toprule
+\textbf{Veličina} & \textbf{Vzorec} & \textbf{Význam} \\
+\midrule
+amplituda                & $\sigma_a = \dfrac{\sigma_{\max} - \sigma_{\min}}{2}$ & poloviční rozkmit \\[1ex]
+střední napětí          & $\sigma_m = \dfrac{\sigma_{\max} + \sigma_{\min}}{2}$ & střed cyklu \\[1ex]
+součinitel asymetrie & $R = \dfrac{\sigma_{\min}}{\sigma_{\max}}$ & typ cyklu \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Typy cyklů podle $R$:}
+\begin{itemize}[nosep]
+    \item $R = -1$ $\to$ \textbf{symetrický střídavý} ($\sigma_m = 0$)
+    \item $R = 0$ $\to$ \textbf{míjivý tah} ($\sigma_{\min} = 0$)
+    \item $R = \pm\infty$ $\to$ \textbf{míjivý tlak} ($\sigma_{\max} = 0$)
+    \item jiné $R$ $\to$ \textbf{asymetrický střídavý}
+\end{itemize}
+
+%% ============================================================
+\section{Deterministické řešení -- Stav A (kontakt aktivní)}
+
+\subsection{Kdy nastává}
+
+Síla míří doprava ($F = +140\unit{kN}$), tlačí hřídel do pravé stěny. Stěna se brání reakcí $R_R$. Úloha \textbf{staticky neurčitá}.
+
+\subsection{Volné těleso (FBD) a~vnitřní síly}
+
+Konvence: tah~$+$, $+x$ doprava. $R_R$ je reakce od pravé stěny -- působí proti pohybu, tedy doleva, $R_R \le 0$.
+
+Vnitřní osová síla $N(x)$:
+\begin{align}
+N_{\mathrm{levá}}(x < x_F) &= F + R_R \\
+N_{\mathrm{pravá}}(x > x_F) &= R_R
+\end{align}
+(Mezi vetknutím a~silou jde celá síla $F$ minus reakce, za silou jde už jen reakce $R_R$.)
+
+\subsection{Podmínka kompatibility}
+
+Pravý konec se nesmí pohnout (drží jej stěna):
+\begin{equation}
+\Delta_{\mathrm{tot}} = \frac{N_{\mathrm{levá}}\cdot C_L\cdot E + N_{\mathrm{pravá}}\cdot C_R\cdot E}{E} = 0
+\end{equation}
+
+Po vykrácení $E$:
+\begin{equation}
+N_{\mathrm{levá}}\cdot C_L + N_{\mathrm{pravá}}\cdot C_R = 0
+\end{equation}
+
+Dosadíme:
+\begin{equation}
+(F + R_R)\cdot C_L + R_R\cdot C_R = 0 \quad\Rightarrow\quad \boxed{R_R = -F\cdot \frac{C_L}{C_L + C_R}}
+\end{equation}
+
+\subsection{Výpočet poddajností}
+
+Průřezy:
+\begin{equation}
+A_D = \frac{\pi\cdot 50^2}{4} = 1963{,}5\unit{mm^2},\qquad A_d = \frac{\pi\cdot 35^2}{4} = 962{,}1\unit{mm^2}
+\end{equation}
+
+\textbf{Levá část} ($x \in [0; 500]$): úseky $D$ mají dohromady $200 + 290 = 490\unit{mm}$, úsek $d$ (levý zápich) má $10\unit{mm}$.
+\begin{equation}
+C_L = \frac{490}{1963{,}5} + \frac{10}{962{,}1} = 0{,}24955 + 0{,}01039 = 0{,}25995\unit{mm/mm^2}
+\end{equation}
+
+\textbf{Pravá část} ($x \in [500; 820]$): úseky $D$ mají dohromady $110 + 200 = 310\unit{mm}$, úsek $d$ (pravý zápich) má $10\unit{mm}$.
+\begin{equation}
+C_R = \frac{310}{1963{,}5} + \frac{10}{962{,}1} = 0{,}15788 + 0{,}01039 = 0{,}16827\unit{mm/mm^2}
+\end{equation}
+
+\subsection{Reakce a~vnitřní síly v~Stavu~A}
+
+\begin{align}
+R_R &= -140\,000 \cdot \frac{0{,}25995}{0{,}25995 + 0{,}16827} = -140\,000 \cdot \frac{0{,}25995}{0{,}42822} = \boxed{-84\,985\unit{N}} \\[1ex]
+N_{\mathrm{levá}}^{A} &= F + R_R = 140\,000 - 84\,985 = \boxed{+55\,015\unit{N}}\quad (\text{tah}) \\[1ex]
+N_{\mathrm{pravá}}^{A} &= R_R = \boxed{-84\,985\unit{N}}\quad (\text{tlak})
+\end{align}
+
+\begin{poznamka}[Smysl]
+Kus síly ($\approx 60\%$) jde do levé stěny tahem, zbytek ($\approx 40\%$) odtlačí pravou stěnu.
+\end{poznamka}
+
+%% ============================================================
+\section{Deterministické řešení -- Stav B (kontakt rozevřen)}
+
+\subsection{Kdy nastává}
+
+Síla míří doleva ($F = -140\unit{kN}$), táhne hřídel od pravé stěny. Stěna nemůže táhnout zpět $\Rightarrow$ $R_R = 0$, hřídel se odlepí. Úloha \textbf{staticky určitá}.
+
+\subsection{Vnitřní síly}
+
+Z~rovnováhy ($F + R_L + R_R = 0$, $R_R = 0$ $\Rightarrow$ $R_L = -F = +140\unit{kN}$):
+\begin{align}
+N_{\mathrm{levá}}^{B} &= F + 0 = \boxed{-140\,000\unit{N}}\quad (\text{tlak}) \\
+N_{\mathrm{pravá}}^{B} &= 0
+\end{align}
+
+\begin{poznamka}[Pravá část je „mrtvá"]
+V~Stavu~B za silou není nic, co by tahalo nebo tlačilo. Síla se rozhodla jít doleva, vetknutí ji zachytí.
+\end{poznamka}
+
+%% ============================================================
+\section{Lokální napětí ve vrubech}
+
+Pomocí $\sigma = K_t \cdot N/A_d$ (vrub je v~užším průřezu $d$, používáme $A_d$):
+
+\subsection{Levý vrub ($x \in [200; 210]$)}
+
+\begin{align}
+\sigma_L^{A} &= 2{,}10\cdot \frac{55\,015}{962{,}1} = \boxed{+120{,}1\unit{MPa}}\quad (\text{tah}) \\
+\sigma_L^{B} &= 2{,}10\cdot \frac{-140\,000}{962{,}1} = \boxed{-305{,}6\unit{MPa}}\quad (\text{tlak})
+\end{align}
+
+\subsection{Pravý vrub ($x \in [610; 620]$)}
+
+\begin{align}
+\sigma_R^{A} &= 2{,}10\cdot \frac{-84\,985}{962{,}1} = \boxed{-185{,}5\unit{MPa}}\quad (\text{tlak}) \\
+\sigma_R^{B} &= 0\unit{MPa}
+\end{align}
+
+\subsection{Charakteristiky cyklu}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lcccccp{3.5cm}}
+\toprule
+\textbf{Vrub} & $\sigma_{\max}$ [MPa] & $\sigma_{\min}$ [MPa] & $\sigma_a$ [MPa] & $\sigma_m$ [MPa] & $R$ & \textbf{Charakter} \\
+\midrule
+\textbf{Levý}  & $+120{,}1$ & $-305{,}6$ & $\mathbf{212{,}8}$ & $\mathbf{-92{,}8}$ & $-2{,}55$ & asymetrický střídavý \\
+\textbf{Pravý} & $0$        & $-185{,}5$ & $\mathbf{92{,}8}$  & $\mathbf{-92{,}8}$ & $\pm\infty$ & míjivý tlak \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Pozorování:}
+\begin{itemize}[nosep]
+    \item \textbf{Levý vrub je kritický} -- má největší tlakovou špičku $-305{,}6\unit{MPa}$ (Stav~B, celá síla vetknutí).
+    \item \textbf{Pravý vrub} je vždy v~tlaku nebo nulový -- když síla táhne doleva, pravá strana se odlepí a~napětí padne na 0.
+    \item Obě $\sigma_m$ vyšla shodně $-92{,}8\unit{MPa}$ (důsledek symetrie obdélníkové vlny).
+\end{itemize}
+
+%% ============================================================
+\section{Časový průběh napětí}
+
+Síla $F(t)$ je obdélníková vlna $\pm 140\unit{kN}$ -- okamžité přepínání mezi $+F_0$ a~$-F_0$. Statický výpočet $\Rightarrow$ napětí \textbf{přepíná mezi dvěma diskrétními hodnotami} podle stavu:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+& \textbf{Stav A} ($F = +F_0$) & \textbf{Stav B} ($F = -F_0$) \\
+\midrule
+$\sigma_{\mathrm{levý}}(t)$ & $+120{,}1\unit{MPa}$ & $-305{,}6\unit{MPa}$ \\
+$\sigma_{\mathrm{pravý}}(t)$ & $-185{,}5\unit{MPa}$ & $0\unit{MPa}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Viz \texttt{priklad\_5E\_vysledky.png}, panely 2.~řádku.
+
+\begin{poznamka}[Proč žádný přechod?]
+Dynamika (setrvačnost, vlnění) se zanedbává -- řešíme jako kvazistatický problém. Reálná hřídel by měla rampu mikrosekund, ale pro únavu nehraje roli.
+\end{poznamka}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{priklad_5E_vysledky.png}
+\caption{Časový průběh síly a~napětí, vnitřní osová síla $N(x)$ v~obou stavech, histogramy MC.}
+\end{figure}
+
+%% ============================================================
+\section{Stochastická analýza (Monte Carlo)}
+
+\subsection{Vstupní rozdělení}
+
+Tolerance $\pm 0{,}5\unit{mm}$ interpretována pravidlem $3\sigma$ $\Rightarrow$ směrodatná odchylka:
+\begin{equation}
+\sigma_{\mathrm{dim}} = \frac{0{,}5}{3} \approx 0{,}167\unit{mm}
+\end{equation}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llp{5cm}}
+\toprule
+\textbf{Veličina} & \textbf{Rozdělení} & \textbf{Parametry} \\
+\midrule
+$D, d, r, L_1\ldots L_5, x_F$ & Normální   & $\mu$ = nominal, $\sigma = 0{,}167\unit{mm}$ \\
+$F$                            & Uniformní  & $\langle 140\,000;\,141\,000\rangle\unit{N}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+(Poloměr $r$ ošetřen \texttt{np.maximum(\ldots, 0.5)} -- ochrana proti záporné hodnotě.)
+
+\subsection{Postup}
+
+Pro každou z~$N = 100\,000$ realizací: vygenerovat náhodné rozměry $\to$ spočítat $A_D, A_d, K_t, C_L, C_R$ $\to$ vyřešit Stav~A i~B $\to$ výsledné $\sigma_{L,\max}, \sigma_{L,\min}, \sigma_{R,\min}, \sigma_a, \sigma_m$.
+
+\subsection{Výsledky}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Veličina} & $\boldsymbol{\mu}$ & $\boldsymbol{\sigma}$ & \textbf{CoV} & \textbf{95\,\% CI} \\
+\midrule
+$\sigma_{L,\max}$ [MPa] & $+120{,}54$ & $1{,}91$ & $0{,}016$ & $[+116{,}9;\,+124{,}3]$ \\
+$\sigma_{L,\min}$ [MPa] & $-306{,}74$ & $4{,}80$ & $0{,}016$ & $[-316{,}3;\,-297{,}4]$ \\
+$\sigma_{L,a}$    [MPa] & $+213{,}64$ & $3{,}35$ & $0{,}016$ & $[+207{,}2;\,+220{,}3]$ \\
+$\sigma_{R,\min}$ [MPa] & $-186{,}20$ & $2{,}91$ & $0{,}016$ & $[-192{,}0;\,-180{,}6]$ \\
+$\sigma_{R,a}$    [MPa] & $+93{,}10$  & $1{,}45$ & $0{,}016$ & $[+90{,}3;\,+96{,}0]$ \\
+$K_t$ [-]               & $2{,}100$   & $0{,}020$ & $0{,}010$ & $[2{,}06;\,2{,}14]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Variabilita napětí $\approx 1{,}6\,\%$} -- velmi nízká, protože tolerance $\pm 0{,}5\unit{mm}$ na rozměrech řádu desítek mm je relativně malá.
+
+\textbf{Kde se rozptyl bere:}
+\begin{enumerate}[nosep]
+    \item $A_d$ -- nejvíc (kvadratická závislost na $d$, $\sigma \propto 1/A_d$).
+    \item $K_t$ -- citlivý na poloměr $r$ (Neuberovo $\sqrt{(D-d)/r}$).
+    \item $F$ -- minimálně (úzká tolerance $+1000/-0\unit{N}$, jen $0{,}7\,\%$ nominálu).
+\end{enumerate}
+
+%% ============================================================
+\section{Haighův diagram a~kontrola únavy}
+
+\subsection{Co Haigh ukazuje}
+
+Vodorovná osa: \textbf{střední napětí} $\sigma_m$. Svislá: \textbf{amplituda} $\sigma_a$. Každý zatěžovací stav je jeden bod.
+
+\textbf{Goodmanova přímka} ohraničuje bezpečnou oblast:
+\begin{equation}
+\frac{\sigma_a}{\sigma_c} + \frac{|\sigma_m|}{R_e} = 1
+\end{equation}
+
+s~materiálovými konstantami:
+\begin{itemize}[nosep]
+    \item $R_e = 500\unit{MPa}$ (mez kluzu)
+    \item $\sigma_c = 300\unit{MPa}$ (mez únavy v~symetrickém střídavém cyklu)
+\end{itemize}
+
+Bod \textbf{pod} přímkou $\Rightarrow$ vyhoví na únavu, \textbf{nad} $\Rightarrow$ nevyhoví.
+
+\subsection{Naše body}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Vrub} & $\sigma_m$ [MPa] & $\sigma_a$ [MPa] & $\sigma_a + \sigma_c\cdot|\sigma_m|/R_e$ & \textbf{Vyhoví?} \\
+\midrule
+Levý  & $-92{,}8$ & $212{,}8$ & $212{,}8 + 300\cdot 92{,}8/500 = 268{,}5$ & $< 300$ \checkmark{} těsně \\
+Pravý & $-92{,}8$ & $92{,}8$  & $92{,}8 + 55{,}7 = 148{,}5$               & $< 300$ \checkmark{} s~rezervou \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{priklad_5E_haigh.png}
+\caption{Haighův diagram s~Goodmanovou přímkou. Bublina MC bodů kolem deterministických špiček.}
+\end{figure}
+
+\begin{poznamka}[Pozor]
+Levý vrub je na hraně. Při horší realizaci tolerance nebo nižší $\sigma_c$ by mohl spadnout nad přímku.
+\end{poznamka}
+
+%% ============================================================
+\section{Souhrn pro odprezentování (cheat sheet)}
+
+\subsection{Co říct na úvod (1~minuta)}
+
+\begin{quote}
+„Mám axiálně zatíženou hřídel se dvěma zápichy. Vlevo pevné vetknutí, vpravo se opírá o~stěnu -- ale od stěny se může odlepit. Síla se střídá mezi $\pm 140\unit{kN}$. Cílem je najít napětí ve vrubech v~čase a~posoudit únavu."
+\end{quote}
+
+\subsection{Co kreslit na tabuli}
+
+\begin{enumerate}[nosep]
+    \item \textbf{Schéma} s~rozměry $200/10/400/10/200$, $D=50$, $d=35$, $r=5$, $x_F=500$.
+    \item Šipky vazeb: vlevo vetknutí (oboustranné), vpravo „$\oplus\to\,|$" (jednostranný kontakt).
+    \item \textbf{Dva FBD} vedle sebe: Stav~A ($R_R$ aktivní), Stav~B ($R_R = 0$).
+\end{enumerate}
+
+\subsection{Tři klíčové vzorce}
+
+\begin{enumerate}[nosep]
+    \item \textbf{Reakce v~Stavu~A:} $R_R = -F\cdot C_L/(C_L+C_R)$ -- z~kompatibility.
+    \item \textbf{Lokální napětí:} $\sigma = K_t \cdot N/A_d$.
+    \item \textbf{Charakteristiky cyklu:} $\sigma_a = (\sigma_{\max}-\sigma_{\min})/2$, $\sigma_m = (\sigma_{\max}+\sigma_{\min})/2$.
+\end{enumerate}
+
+\subsection{Čtyři čísla, která musí padnout}
+
+\begin{itemize}[nosep]
+    \item Stav~A: $N_L = +55\unit{kN}$, $N_R = -85\unit{kN}$.
+    \item Stav~B: $N_L = -140\unit{kN}$, $N_R = 0$.
+    \item $K_t = 2{,}10$ (Peterson Chart 2.19 pro $D/d = 1{,}43$, $r/d = 0{,}143$).
+    \item Levý vrub: $\sigma \in \langle -305{,}6;\,+120{,}1\rangle\unit{MPa}$, $\sigma_a = 212{,}8$, $\sigma_m = -92{,}8$.
+\end{itemize}
+
+\subsection{Možné otázky a~odpovědi}
+
+\paragraph{Q: Proč jsou dva stavy a~ne jeden?}
+Pravý kontakt je jednostranný -- neumí táhnout. Když síla míří od stěny, hřídel se odlepí a~úloha se zjednoduší (staticky určitá). Když míří do stěny, kontakt drží a~úloha je 1$\times$ staticky neurčitá.
+
+\paragraph{Q: Proč pro $K_t$ Peterson a~ne Neuber?}
+Neuber dá $K_t \approx 3{,}45$, je to konzervativní mez (předpokládá ostrou trhlinu). Peterson je experimentálně kalibrovaný graf pro reálnou geometrii -- přesnější. Konzervativní volba by byla bezpečná, ale~příliš pesimistická.
+
+\paragraph{Q: Proč tak nízké CoV výstupu (1{,}6\,\%)?}
+Rozměry mají tolerance řádově půl procenta nominálu ($0{,}5/35 \approx 1{,}4\,\%$), navíc se ve vzorcích vyskytují s~exponentem $1$--$2$. Výsledné napětí proto kolísá podobně málo.
+
+\paragraph{Q: Která veličina nejvíc ovlivňuje rozptyl?}
+Průřez $A_d$ (skrz průměr $d$) a~součinitel $K_t$ (skrz poloměr $r$). Síla $F$ skoro vůbec -- má úzkou toleranci.
+
+\paragraph{Q: Proč je obě $\sigma_m$ shodně $-92{,}8\unit{MPa}$?}
+Pro pravý vrub: $(0 + (-185{,}5))/2 = -92{,}75$. Pro levý: $(+120{,}1 + (-305{,}6))/2 = -92{,}75$. Numericky shodné, vyplývá z~toho, že amplitudy obou cyklů jsou symetrické kolem stejné průměrné kompresní hodnoty (důsledek vyvážených sil v~obou stavech).
+
+\paragraph{Q: Vyhoví hřídel na únavu?}
+Podle Goodmana ano -- levý vrub má $268{,}5\unit{MPa}$ proti limitu $300\unit{MPa}$, ale \textbf{rezerva je malá} ($\sim 10\,\%$). Při horší toleranci nebo slabším materiálu by mohl spadnout.
+
+\paragraph{Q: Co kdyby kontakt byl oboustranný (přivařený)?}
+Pak by Stav~B vypadal stejně jako Stav~A (jen se zápornou silou). Tlaková špička v~levém vrubu by klesla z~$-305{,}6$ na $-120{,}1\unit{MPa}$ -- hřídel by byla 2{,}5$\times$ méně namáhaná. Jednostranný kontakt je z~hlediska únavy nepříznivý.
+
+\end{document}

@@ -1,4 +1,14 @@
-\section{Příklad 3E -- Výpočet pravděpodobnosti bezporuchového provozu (klínové řemeny)}
+\refstepcounter{section}%
+\phantomsection
+\addcontentsline{toc}{section}{\protect\numberline{\thesection}Příklad 3E -- Výpočet pravděpodobnosti bezporuchového provozu (klínové řemeny)}%
+\markboth{Příklad 3E -- Výpočet pravděpodobnosti bezporuchového provozu (klínové řemeny)}{}%
+
+\newgeometry{margin=2.5cm}
+
+\begin{center}
+	{\Large \textbf{Výpočet pravděpodobnosti bezporuchového provozu}}\\[-1mm]
+	{\small Příklad č. 3}
+\end{center}
 
 
 
@@ -25,7 +35,7 @@ P_{\text{bezp.}} = P(R_m > \sigma_p)
 \label{eq:pravd}
 \end{equation}
 
-\subsection*{Předpoklad výpočtu}
+\section*{Předpoklad výpočtu}
 
 Obě veličiny byly uvažovány jako náhodné s normálním rozdělením:
 
@@ -49,7 +59,7 @@ s_{\sigma} = 46{,}70\ \text{MPa}
 s_R = 34{,}95\ \text{MPa}
 \]
 
-\subsection*{Kontrola normality}
+\section*{Kontrola normality}
 
 Pro ověření předpokladu normálního rozdělení byla zvolena hladina významnosti:
 \[
@@ -78,7 +88,7 @@ p_{\sigma_p} = 0{,}5000, \qquad p_{R_m} = 0{,}4792
 Protože v obou případech platí $p > \alpha = 0{,}05$, nelze zamítnout nulovou hypotézu o normálním rozdělení.  
 Předpoklad uvedený ve vztahu~(\ref{eq:normalita}) je tedy pro další výpočet přijatelný.
 
-\subsection*{Výpočet indexu spolehlivosti}
+\section*{Výpočet indexu spolehlivosti}
 
 Zavedeme rozdílovou veličinu:
 
@@ -106,7 +116,7 @@ Po dosazení:
 = 0{,}9337
 \]
 
-\subsection*{Výpočet pravděpodobnosti}
+\section*{Výpočet pravděpodobnosti}
 
 Hledaná pravděpodobnost ze vztahu~(\ref{eq:pravd}) se určí pomocí distribuční funkce normálního rozdělení:
 
@@ -125,7 +135,7 @@ P_{\text{bezp.}} = \Phi(0{,}9337) = 0{,}8248
 P_{\text{bezp.}} = 82{,}48 \%
 \]
 
-\subsection*{Závěr}
+\section*{Závěr}
 
 Na základě provedeného výpočtu byla pravděpodobnost bezporuchového provozu stanovena jako:
 
@@ -143,4 +153,5 @@ Pravděpodobnost poruchy je:
 \noindent
 Při uvažovaném normálním rozdělení veličin $\sigma_p$ a $R_m$ je tedy pravděpodobnost bezporuchového provozu přibližně $82{,}5\,\%$.
 
+\restoregeometry
 

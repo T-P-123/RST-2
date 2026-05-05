@@ -1,6 +1,22 @@
-\section{Příklad 1E -- Stochastické vyhodnocení vnitřních účinků nosníku}
+\refstepcounter{section}%
+\phantomsection
+\addcontentsline{toc}{section}{\protect\numberline{\thesection}Příklad 1E -- Stochastické vyhodnocení vnitřních účinků nosníku}%
+\markboth{Příklad 1E -- Stochastické vyhodnocení vnitřních účinků nosníku}{}%
 
-\subsection*{Zadání a výpočtový postup}
+\newgeometry{left=18mm,right=18mm,top=16mm,bottom=18mm}
+\begingroup
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\captionsetup{font=small}
+
+\begin{center}
+	{\Large \textbf{Stochastické vyhodnocení vnitřních účinků nosníku}}\\[-1mm]
+	{\small Příklad č. 1}
+\end{center}
+
+\vspace{-2mm}
+
+\section*{Zadání a výpočtový postup}
 
 Úkolem bylo vykreslit průběhy vnitřních účinků po délce nosníku, tedy normálové síly \(N(x)\), posouvající síly \(T(x)\) a ohybového momentu \(M(x)\). Vnější zatížení bylo uvažováno jako stochastické. Náhodné veličiny byly popsány normálním a lognormálním rozdělením se středními hodnotami podle obr. \ref{fig:zadani} a variačním koeficientem \(v=0{,}1\).
 
@@ -35,7 +51,7 @@ Pro střední hodnoty zatížení vychází
 	\max |M| = 67{,}5\,\mathrm{kN\,m}.
 \end{equation}
 
-\subsection*{Stochastické vyhodnocení}
+\section*{Stochastické vyhodnocení}
 
 Zatížení \(F\), \(q\) a \(M_0\) byla dále uvažována jako náhodné veličiny. Směrodatná odchylka jednotlivých veličin byla určena pomocí variačního koeficientu
 
@@ -54,7 +70,7 @@ Výpočet byl proveden metodou Monte Carlo pro \(n = 1\,000\,000\) simulací. V 
 	\label{fig:det}
 \end{figure}
 
-\subsection*{Výsledky}
+\section*{Výsledky}
 
 Na obr. \ref{fig:det} jsou uvedeny deterministické průběhy vnitřních účinků. Normálová síla je po celé délce nosníku nulová, protože na nosník nepůsobí vodorovné zatížení. Posouvající síla \(T(x)\) má skoky v místech bodových účinků a na převislé části lineárně klesá vlivem spojitého zatížení. Ohybový moment \(M(x)\) má v místě koncentrovaného momentu skok a na převislé části parabolický průběh.
 
@@ -112,7 +128,7 @@ Obr. \ref{fig:stochasticke_prubehy} ukazuje střední průběhy vnitřních úč
 
 Na obr. \ref{fig:hist} je uveden histogram maximální absolutní hodnoty ohybového momentu. Histogram ukazuje, jak často se v simulacích vyskytovaly jednotlivé hodnoty \(\max |M|\), a doplňuje tak percentilové vyhodnocení o pravděpodobnostní rozdělení maximálního ohybového účinku. Výsledky pro normální a lognormální rozdělení se téměř překrývají. Nejčastější hodnoty se nachází v okolí střední hodnoty přibližně \(67{,}5\,\mathrm{kN\,m}\).
 
-\subsection*{Závěr}
+\section*{Závěr}
 
 Deterministický výpočet pro střední hodnoty zatížení poskytl reakce \(R_A=-14{,}3\,\mathrm{kN}\), \(R_B=67{,}3\,\mathrm{kN}\) a maximální absolutní ohybový moment \(\max |M|=67{,}5\,\mathrm{kN\,m}\).
 
@@ -120,3 +136,5 @@ Stochastické vyhodnocení metodou Monte Carlo umožnilo kromě středních hodn
 
 Výsledky pro normální a lognormální rozdělení byly téměř shodné. V této úloze tedy volba rozdělení neměla zásadní vliv na průběhy vnitřních účinků ani na maximální ohybový moment. Hlavním důvodem je nízký variační koeficient \(v=0{,}1\), při kterém se obě rozdělení výrazně neliší.
 
+\endgroup
+\restoregeometry

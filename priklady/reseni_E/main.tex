@@ -6,24 +6,12 @@
 \usepackage[czech]{babel}
 \usepackage{lmodern}
 
-% --- Matematika ---
-\usepackage{amsmath,amssymb,amsfonts}
-
-% --- Grafika a layout ---
-\usepackage{graphicx}
+% --- Layout + vkládání originálních PDF ---
 \usepackage[margin=2.2cm]{geometry}
-\usepackage{float}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{multirow}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{enumitem}
+\usepackage{pdfpages}
 \usepackage{fancyhdr}
 \usepackage{xcolor}
 \usepackage{hyperref}
-
-\graphicspath{{img/}}
 
 \hypersetup{
     colorlinks=true,
@@ -34,17 +22,12 @@
     pdfauthor={Pavlíček, Sláčik, Horčic, Paclík}
 }
 
-% --- Záhlaví / zápatí ---
+% --- Záhlaví / zápatí (jen na titulce a TOC) ---
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small Spolehlivost konstrukcí -- Úlohy E}
-\fancyhead[R]{\small \leftmark}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
-
-% --- Vlastní příkazy (sjednoceně z původních fragmentů) ---
-\newcommand{\unit}[1]{\,\mathrm{#1}}
-\newcommand{\E}[1]{\times 10^{#1}}
 
 \begin{document}
 
@@ -82,14 +65,20 @@
 \tableofcontents
 \clearpage
 
-\input{priklad1}
-\clearpage
-\input{priklad2}
-\clearpage
-\input{priklad3}
-\clearpage
-\input{priklad4}
-\clearpage
-\input{priklad5}
+% =========================================================
+% Vložení originálních PDF jednotlivých příkladů (bit-perfect 1:1)
+% pagecommand={\thispagestyle{empty}} = potlačí unified header na stránkách příkladů
+% addtotoc={...} = přidá záznam do obsahu na první stranu každého příkladu
+% =========================================================
+
+\includepdf[pages=-,pagecommand={\thispagestyle{empty}},addtotoc={1,section,1,Příklad 1E -- Stochastické vyhodnocení vnitřních účinků nosníku,sec:1E}]{orig_pdfs/priklad1E.pdf}
+
+\includepdf[pages=-,pagecommand={\thispagestyle{empty}},addtotoc={1,section,1,Příklad 2E -- Osový kvadratický moment nesymetrického průřezu,sec:2E}]{orig_pdfs/priklad2E.pdf}
+
+\includepdf[pages=-,pagecommand={\thispagestyle{empty}},addtotoc={1,section,1,Příklad 3E -- Výpočet pravděpodobnosti bezporuchového provozu (klínové řemeny),sec:3E}]{orig_pdfs/priklad3E.pdf}
+
+\includepdf[pages=-,pagecommand={\thispagestyle{empty}},addtotoc={1,section,1,Příklad 4E -- MS pružnosti a deformace stupňovitého prutu,sec:4E}]{orig_pdfs/priklad4E.pdf}
+
+\includepdf[pages=-,pagecommand={\thispagestyle{empty}},addtotoc={1,section,1,Příklad 5E -- Časový průběh napětí ve vrubech,sec:5E}]{orig_pdfs/priklad5E.pdf}
 
 \end{document}

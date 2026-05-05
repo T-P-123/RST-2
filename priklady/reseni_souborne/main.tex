@@ -36,7 +36,7 @@
 % Záhlaví
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small RST -- Souborné řešení příkladů 1E--5E}
+\fancyhead[L]{\small Spolehlivost konstrukcí -- Úlohy E}
 \fancyhead[R]{\small Akademický rok 2025/2026}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -47,18 +47,56 @@
 
 \captionsetup{font=small}
 
-\title{%
-    \vspace{-1cm}
-    \textbf{Rizika a spolehlivost technických systémů}\\[0.3cm]
-    \Large Souborné řešení příkladů 1E--5E\\[0.2cm]
-    \large Akademický rok 2025/2026
-}
-\author{}
-\date{}
-
 \begin{document}
-\maketitle
-\thispagestyle{fancy}
+
+\begin{titlepage}
+\centering
+
+% --- Logo VUT (volitelné, fallback na text) ---
+\IfFileExists{logo/vut.pdf}{%
+    \noindent\includegraphics[width=4cm]{logo/vut.pdf}\hfill\strut
+}{%
+    \IfFileExists{logo/vut.png}{%
+        \noindent\includegraphics[width=4cm]{logo/vut.png}\hfill\strut
+    }{%
+        \noindent{\bfseries\Large VUT FSI}\hfill\strut
+    }%
+}
+
+\vspace{0.4cm}
+\noindent\rule{\textwidth}{0.8pt}
+
+\vspace{1.2cm}
+
+{\large Vysoké učení technické v Brně\par}
+{\large Fakulta strojního inženýrství\par}
+{\large Ústav mechaniky těles, mechatroniky a biomechaniky\par}
+
+\vfill
+
+{\Huge\bfseries ÚLOHY E\par}
+\vspace{0.6cm}
+{\Large Souborné řešení příkladů 1E\,--\,5E\par}
+
+\vspace{1.2cm}
+
+{\Large\itshape Spolehlivost konstrukcí\par}
+
+\vfill
+
+{\large\bfseries Členové týmu\par}
+\vspace{0.3cm}
+{\large
+Tomáš Pavlíček\\[2pt]
+Tomáš Sláčik\\[2pt]
+Vašek Horčic\\[2pt]
+Eduard Paclík\par}
+
+\vspace{1.2cm}
+
+{\normalsize Akademický rok 2025/2026\par}
+
+\end{titlepage}
 
 \tableofcontents
 \clearpage

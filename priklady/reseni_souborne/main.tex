@@ -1,0 +1,80 @@
+\documentclass[a4paper,11pt]{article}
+
+% Kódování a jazyk
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[czech]{babel}
+\usepackage{lmodern}
+
+% Matematika
+\usepackage{amsmath,amssymb,amsfonts}
+
+% Grafika a layout
+\usepackage{graphicx}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!60!black
+}
+
+% Hledání obrázků v podsložkách jednotlivých příkladů
+\graphicspath{{1E/}{2E/}{3E/}{4E/}{5E/}}
+
+% Záhlaví
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small RST -- Souborné řešení příkladů 1E--5E}
+\fancyhead[R]{\small Akademický rok 2025/2026}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Vlastní příkazy (sjednocené z dílčích projektů)
+\newcommand{\unit}[1]{\,\mathrm{#1}}
+\newcommand{\E}[1]{\times 10^{#1}}
+
+\captionsetup{font=small}
+
+\title{%
+    \vspace{-1cm}
+    \textbf{Rizika a spolehlivost technických systémů}\\[0.3cm]
+    \Large Souborné řešení příkladů 1E--5E\\[0.2cm]
+    \large Akademický rok 2025/2026
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\tableofcontents
+\clearpage
+
+\input{1E/priklad_1E.tex}
+\clearpage
+
+\input{2E/priklad_2E.tex}
+\clearpage
+
+\input{3E/priklad_3E.tex}
+\clearpage
+
+\input{4E/priklad_4E.tex}
+\clearpage
+
+\input{5E/priklad_5E.tex}
+
+\end{document}

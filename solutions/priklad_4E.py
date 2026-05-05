@@ -214,12 +214,12 @@ for name, c, a2 in zip(variables_deform.keys(), corrs_d, alpha_sq_d):
 # 4. GRAFY
 # ============================================================
 
-fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 fig.suptitle('Příklad 4E — stupňovitý prut: MS pružnosti a deformace\n'
              f'(MC, N={N_sim:,}, log-normální, CoV={CoV})',
              fontsize=13, fontweight='bold')
 
-ax = axes[0, 0]
+ax = axes[0]
 bins = np.linspace(0, max(np.percentile(sigma_max_mc, 99.9), R_e_mean*1.3), 100)
 ax.hist(sigma_max_mc, bins=bins, density=True, alpha=0.6, color='red', label='σ_max')
 ax.hist(Re_mc, bins=bins, density=True, alpha=0.6, color='blue', label='R_e')
@@ -230,31 +230,13 @@ ax.set_ylabel('Hustota')
 ax.set_title(f'MS pružnosti: P_f = {P_yield_failure*100:.2f}%')
 ax.legend(); ax.grid(True, alpha=0.3)
 
-ax = axes[0, 1]
+ax = axes[1]
 bins_w = np.linspace(0, max(np.percentile(w_mc, 99.9), w_max_mean*1.5), 100)
 ax.hist(w_mc, bins=bins_w, density=True, alpha=0.6, color='red', label='w (průhyb)')
 ax.hist(wm_mc, bins=bins_w, density=True, alpha=0.6, color='blue', label='w_max')
 ax.set_xlabel('Průhyb [mm]'); ax.set_ylabel('Hustota')
 ax.set_title(f'MS deformace: P_f = {P_deform_failure*100:.4f}%')
 ax.legend(); ax.grid(True, alpha=0.3)
-
-ax = axes[1, 0]
-names_y = list(variables_yield.keys())
-colors_y = ['red' if c < 0 else 'blue' for c in corrs_y]
-ax.barh(names_y, alpha_sq_y * 100, color=colors_y, alpha=0.7, edgecolor='white')
-ax.set_xlabel('Příspěvek k rozptylu [%]')
-ax.set_title('Citlivostní analýza — MS pružnosti (g₁)')
-ax.grid(True, alpha=0.3)
-ax.invert_yaxis()
-
-ax = axes[1, 1]
-names_d = list(variables_deform.keys())
-colors_d = ['red' if c < 0 else 'blue' for c in corrs_d]
-ax.barh(names_d, alpha_sq_d * 100, color=colors_d, alpha=0.7, edgecolor='white')
-ax.set_xlabel('Příspěvek k rozptylu [%]')
-ax.set_title('Citlivostní analýza — MS deformace (g₂)')
-ax.grid(True, alpha=0.3)
-ax.invert_yaxis()
 
 plt.tight_layout()
 plt.savefig('/Users/tomas/Projects/RST/solutions/priklad_4E_vysledky.png', dpi=150, bbox_inches='tight')

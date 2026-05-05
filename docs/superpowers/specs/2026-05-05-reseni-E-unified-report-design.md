@@ -12,15 +12,17 @@ Vytvořit jedno PDF (`reseni_E.pdf`) obsahující všech 5 vyřešených příkl
 
 ## 2. Vstupy
 
-5 samostatných ZIP balíčků v `/Users/tomas/Projects/RST/priklady/`:
+5 samostatných ZIP balíčků v `/Users/tomas/Projects/RST/priklady/`. **Pozor:** pojmenování zipů NEodpovídá akademickému pořadí. Skutečné mapování zip → E-číslo:
 
-| Soubor | Obsah |
-|--------|-------|
-| `priklad1.zip` | `main.tex`, `qq_plot.png`, `qq_grafy.png` |
-| `priklad2.zip` | `main.tex`, `histo.{png,svg,pdf}`, `priklad_2E_profil.png`, `priklad_2E_histogramy.png`, `size.png`, `hustoty.png` |
-| `priklad3.zip` | `main.tex`, `01..05_*.png`, `zadani.png`, `04_histogram_max_abs_M.png` |
-| `priklad4.zip` | `main.tex`, `priklad_4E_vysledky.png`, `Mises.png`, `U.png` |
-| `priklad5.zip` | `priklad_5E/main.tex` (vnořeno!), `priklad_5E_zadani.png`, `priklad_5E_vysledky.png`, `priklad_5E_haigh.png`, `peterson.png`, `peterson1.png` |
+| Soubor | Obsah | Akademické číslo |
+|--------|-------|------------------|
+| `priklad1.zip` | `main.tex`, `qq_plot.png`, `qq_grafy.png` (pravděpodobnost bezporuchového provozu, klínové řemeny) | **3E** |
+| `priklad2.zip` | `main.tex`, `histo.{png,svg,pdf}`, `priklad_2E_profil.png`, `priklad_2E_histogramy.png`, `size.png`, `hustoty.png` | **2E** |
+| `priklad3.zip` | `main.tex`, `01..05_*.png`, `zadani.png`, `04_histogram_max_abs_M.png` (stoch. vyhodnocení vnitřních účinků nosníku) | **1E** |
+| `priklad4.zip` | `main.tex`, `priklad_4E_vysledky.png`, `Mises.png`, `U.png` | **4E** |
+| `priklad5.zip` | `priklad_5E/main.tex` (vnořeno!), `priklad_5E_zadani.png`, `priklad_5E_vysledky.png`, `priklad_5E_haigh.png`, `peterson.png`, `peterson1.png` | **5E** |
+
+Finální zpráva použije **akademické pořadí 1E → 2E → 3E → 4E → 5E**.
 
 **Stávající styly** (zdroj nejednotnosti):
 - p1, p3 používají `\section*{...}` (nečíslováno, nejde do TOC)
@@ -32,15 +34,17 @@ Vytvořit jedno PDF (`reseni_E.pdf`) obsahující všech 5 vyřešených příkl
 ```
 /Users/tomas/Projects/RST/priklady/reseni_E/
 ├── main.tex             ← master (preambule + titulka + TOC + 5× \input)
-├── priklad1.tex         ← tělo 1E (bez preambule)
-├── priklad2.tex         ← tělo 2E
-├── priklad3.tex         ← tělo 3E
-├── priklad4.tex         ← tělo 4E
-├── priklad5.tex         ← tělo 5E
-├── img/                 ← všechny obrázky s prefixem pN_
+├── priklad1.tex         ← tělo 1E (zdroj: priklad3.zip) — bez preambule
+├── priklad2.tex         ← tělo 2E (zdroj: priklad2.zip)
+├── priklad3.tex         ← tělo 3E (zdroj: priklad1.zip)
+├── priklad4.tex         ← tělo 4E (zdroj: priklad4.zip)
+├── priklad5.tex         ← tělo 5E (zdroj: priklad5.zip)
+├── img/                 ← všechny obrázky s prefixem pN_ (N = akademické číslo!)
 │   └── ...
 └── reseni_E.pdf         ← finální PDF (po `pdflatex × 2`)
 ```
+
+**Pozor na prefix obrázků:** prefix `pN_` odpovídá **akademickému** číslu (1E–5E), ne názvu zipu. Tj. obrázky z `priklad3.zip` (=1E) dostanou prefix `p1_`, obrázky z `priklad1.zip` (=3E) dostanou prefix `p3_`.
 
 Zdrojové zipy zůstanou nedotčené v `priklady/`.
 
@@ -82,30 +86,31 @@ Každý fragment obsahuje **pouze tělo** (text, rovnice, obrázky, vnořené se
 
 ### 5.1 Specifika podle příkladu
 
-**priklad1.tex** (zdroj `priklad1.zip/main.tex`)
-- Smazat: úvodní `\begin{center}` blok s nadpisem
-- 6× `\section*` → `\subsection*` (Předpoklad výpočtu, Kontrola normality, Výpočet indexu spolehlivosti, Výpočet pravděpodobnosti, Závěr, …)
-- Přidat: `\section{Příklad 1E -- Výpočet pravděpodobnosti bezporuchového provozu}`
-- Obrázky: `qq_plot.png`→`p1_qq_plot.png`, `qq_grafy.png`→`p1_qq_grafy.png`
+**priklad1.tex** = příklad **1E** (zdroj: `priklad3.zip/main.tex`)
+- Smazat: úvodní `\begin{center}{\Large\textbf{Stochastické vyhodnocení vnitřních účinků nosníku}}\\{\small Příklad č. 1}\end{center}` blok
+- 4× `\section*` → `\subsection*` (Zadání a výpočtový postup, Stochastické vyhodnocení, Výsledky, Závěr)
+- Přidat: `\section{Příklad 1E -- Stochastické vyhodnocení vnitřních účinků nosníku}`
+- Obrázky → prefix `p1_`: `01_deterministicke_prubehy.png`, `02_stochasticky_prubeh_T.png`, `03_stochasticky_prubeh_M.png`, `04_histogramy.png`, `04_histogram_max_abs_M.png`, `05_rozdil_normalni_lognormalni.png`, `zadani.png`
 
-**priklad2.tex** (z `priklad2.zip/main.tex`)
+**priklad2.tex** = příklad **2E** (zdroj: `priklad2.zip/main.tex`)
 - Smazat: `\title…\maketitle\thispagestyle\tableofcontents\newpage`
 - `\section{Příklad 2E -- Osový kvadratický moment nesymetrického průřezu}` zachovat
-- Obrázky → prefix `p2_`: `histo.{png,svg,pdf}`, `priklad_2E_profil.png`, `priklad_2E_histogramy.png`, `size.png`, `hustoty.png`
+- Obrázky → prefix `p2_`: `histo.png` (preferovat .png před .pdf/.svg), `priklad_2E_profil.png`, `priklad_2E_histogramy.png`, `size.png`, `hustoty.png`
 
-**priklad3.tex** (z `priklad3.zip/main.tex`)
-- 4× `\section*{…}` → `\subsection*{…}` (Zadání, Stochastické vyhodnocení, Výsledky, Závěr)
-- Smazat úvodní centered nadpisový blok (pokud je); přidat `\section{Příklad 3E -- Stochastický průběh vnitřních sil}`
-- Obrázky → prefix `p3_`: `01_…`, `02_…`, `03_…`, `04_…`, `05_…`, `zadani.png`
+**priklad3.tex** = příklad **3E** (zdroj: `priklad1.zip/main.tex`)
+- Smazat úvodní `\begin{center}{\Large\textbf{Výpočet pravděpodobnosti bezporuchového provozu}}\\{\small Příklad č. 3}\end{center}` blok
+- 5× `\section*` → `\subsection*` (Předpoklad výpočtu, Kontrola normality, Výpočet indexu spolehlivosti, Výpočet pravděpodobnosti, Závěr)
+- Přidat: `\section{Příklad 3E -- Výpočet pravděpodobnosti bezporuchového provozu (klínové řemeny)}`
+- Obrázky → prefix `p3_`: `qq_plot.png`, `qq_grafy.png`
 
-**priklad4.tex** (z `priklad4.zip/main.tex`)
+**priklad4.tex** = příklad **4E** (zdroj: `priklad4.zip/main.tex`)
 - Smazat: `\title…\maketitle\thispagestyle\tableofcontents\newpage`
 - `\section{Příklad 4E -- MS pružnosti a deformace stupňovitého prutu}` zachovat
 - Obrázky → prefix `p4_`: `priklad_4E_vysledky.png`, `Mises.png`, `U.png`
 
-**priklad5.tex** (z `priklad5.zip/priklad_5E/main.tex` — pozor, vnořeno!)
+**priklad5.tex** = příklad **5E** (zdroj: `priklad5.zip/priklad_5E/main.tex` — pozor, vnořeno v podsložce!)
 - Smazat: `\title…\maketitle\thispagestyle\tableofcontents\newpage`
-- `\section{Příklad 5E -- ...}` zachovat
+- `\section{Příklad 5E -- Časový průběh napětí ve vrubech}` zachovat
 - Obrázky → prefix `p5_`: `priklad_5E_zadani.png`, `priklad_5E_vysledky.png`, `priklad_5E_haigh.png`, `peterson.png`, `peterson1.png`
 
 ## 6. Build & verifikace
@@ -149,13 +154,15 @@ mv main.pdf reseni_E.pdf
 ## 9. Plán implementace (předběžné kroky)
 
 1. Vytvořit `priklady/reseni_E/` + `priklady/reseni_E/img/`
-2. Rozbalit 5 zipů do tempu
-3. Zkopírovat obrázky s prefixy do `img/`
-4. Pro každý příklad: `cp main.tex prikladN.tex`, aplikovat řezy
-5. Napsat master `main.tex`
-6. Build × 2, parsovat log
+2. Rozbalit 5 zipů do tempu (např. `/tmp/rst_merge/p{1..5}/`)
+3. Zkopírovat obrázky s prefixy odpovídajícími **akademickému** číslu (p3_zadani.png ze zipu1, atd.) do `img/`
+4. Pro každý akademický příklad: `cp <zdrojový-zip>/main.tex prikladN.tex`, aplikovat řezy podle 5.1
+5. Napsat master `main.tex` s preambulí, titulkou, TOC a 5× `\input{prikladN}` v pořadí 1→5
+6. Build × 2 (`pdflatex -interaction=nonstopmode main.tex`), parsovat log na chyby
 7. Vizuální kontrola PDF
-8. Cleanup mezisouborů
-9. Commit
+8. Cleanup mezisouborů (.aux .log .toc .out)
+9. Commit do gitu
+
+(Detailní plán implementace vyrobí writing-plans skill.)
 
 (Detailní plán implementace vyrobí writing-plans skill.)

@@ -1,0 +1,223 @@
+\section{Příklad 4E -- MS pružnosti a deformace stupňovitého prutu}
+
+\subsection{Zadání}
+
+Určete pravděpodobnost dosažení mezního stavu pružnosti a~mezního stavu deformace. Proveďte citlivostní analýzu.
+
+\begin{itemize}[nosep]
+    \item $R_e = 500\unit{MPa}$, $w_{\max} = 2\unit{mm}$, $M = 100\unit{N \cdot m}$
+    \item Modul pružnosti $E = 210\unit{GPa} = 2{,}1 \E{5}\unit{MPa}$
+    \item Tloušťka $t = 15\unit{mm}$
+    \item Stupňovitý plochý prut, výšky úseků $h_1 = 45\unit{mm}$, $h_2 = 30\unit{mm}$, $h_3 = 10\unit{mm}$
+    \item Poloměry přechodů: $r_1 = 3\unit{mm}$ (45$\to$30), $r_2 = 6\unit{mm}$ (30$\to$10)
+    \item Délky úseků: $L_1 = L_2 = L_3 = 60\unit{mm}$
+    \item Všechny vstupní veličiny (včetně $w_{\max}$) modelovány jako log-normální s~$v_X = 0{,}1$
+\end{itemize}
+
+\subsection{Deterministické řešení}
+
+\subsubsection{Nominální napětí v~jednotlivých úsecích}
+
+Průřezové moduly $W_i = \dfrac{t \cdot h_i^2}{6}$ a~nominální napětí $\sigma_{\mathrm{nom},i} = M/W_i$:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cccc}
+\toprule
+\textbf{Úsek} & $h_i$ [mm] & $W_i$ [mm$^3$] & $\sigma_{\mathrm{nom},i}$ [MPa] \\
+\midrule
+1 & 45 & 5\,062{,}5 & 19{,}75 \\
+2 & 30 & 2\,250{,}0 & 44{,}44 \\
+3 & 10 & 250{,}0 & \textbf{400{,}00} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Kritická sekce je úsek 3 ($h_3 = 10\unit{mm}$).
+
+\subsubsection{Součinitelé tvaru (mechanicalc.com, stepped flat bar, ohyb)}
+
+\begin{itemize}[nosep]
+    \item Vrub $r_1$ (45$\to$30): $D/d = 1{,}5$, $r/d = 0{,}1 \Rightarrow K_{t1} \approx 1{,}83$
+    \item Vrub $r_2$ (30$\to$10): $D/d = 3{,}0$, $r/d = 0{,}6 \Rightarrow K_{t2} \approx 1{,}18$
+\end{itemize}
+
+\subsubsection{Maximální napětí}
+
+\begin{align}
+    \sigma_{\max,1} &= K_{t1} \cdot \sigma_{\mathrm{nom},2} = 1{,}83 \cdot 44{,}44 = 81{,}3\unit{MPa} \\
+    \sigma_{\max,2} &= K_{t2} \cdot \sigma_{\mathrm{nom},3} = 1{,}18 \cdot 400 = \boxed{472\unit{MPa}} \label{eq:sigmax}
+\end{align}
+
+Rozhoduje vrub $r_2$. Součinitel bezpečnosti k~MS pružnosti:
+\begin{equation}
+    k = \frac{R_e}{\sigma_{\max,2}} = \frac{500}{472} = \boxed{1{,}059}
+\end{equation}
+
+\paragraph{Numerické ověření (Ansys Workbench).} Pole von Misesova napětí (obr.~\ref{fig:4E-mises}) má maximum ve~vrubu $r_2$ v~dobré shodě s~$\sigma_{\max,2} \approx 472\unit{MPa}$. Drobný rozdíl je způsoben hustotou sítě v~oblasti vrubu.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{p4_Mises.png}
+\caption{Pole ekvivalentního (von Misesova) napětí v~Ansys Workbench -- numerické ověření $\sigma_{\max}$ ve~vrubech $r_1$ a $r_2$.}
+\label{fig:4E-mises}
+\end{figure}
+
+\subsubsection{Průhyb}
+
+Kvadratické momenty $I_i = \dfrac{t \cdot h_i^3}{12}$:
+\begin{equation}
+    I_1 = 113\,906\unit{mm^4}, \quad I_2 = 33\,750\unit{mm^4}, \quad I_3 = 1\,250\unit{mm^4}
+\end{equation}
+
+Konzola s~konstantním momentem $M$ (vetknutí u $h_1$, volný konec za $h_3$):
+\begin{equation}
+    w = \frac{M}{E} \sum_{i=1}^{3} \frac{1}{I_i} \cdot \frac{(L - a_i)^2 - (L - b_i)^2}{2}
+\end{equation}
+kde $L = L_1 + L_2 + L_3 = 180\unit{mm}$, $[a_i, b_i]$ jsou meze úseku $i$. Po dosazení (sekce~3 dominuje, $\approx 86\,\%$ příspěvku):
+\begin{equation}
+    w = 0{,}038 + 0{,}076 + 0{,}686 = \boxed{0{,}800\unit{mm}} < w_{\max} = 2\unit{mm}
+\end{equation}
+
+\paragraph{Numerické ověření (Ansys Workbench).} Pole celkového posunutí $U$ (obr.~\ref{fig:4E-U}) má maximum na~volném konci konzoly v~dobré shodě s~$w \approx 0{,}80\unit{mm}$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{p4_U.png}
+\caption{Pole celkového posunutí $U$ v~Ansys Workbench -- numerické ověření průhybu na~volném konci konzoly.}
+\label{fig:4E-U}
+\end{figure}
+
+\subsection{Stochastická analýza (Monte Carlo)}
+
+\subsubsection{Volba rozdělení vstupních veličin}
+
+Všech 13 vstupních veličin $X_i \in \{R_e, M, E, t, h_1, h_2, h_3, L_1, L_2, L_3, K_{t1}, K_{t2}, w_{\max}\}$ je modelováno \textbf{logaritmicko-normálním rozdělením} s~$v_X = \sigma_X/\mu_X = 0{,}1$. Hustota:
+\begin{equation}
+    f(x) = \frac{1}{x\,k\,\sqrt{2\pi}}\exp\!\left[-\frac{(\ln x - b)^2}{2k^2}\right], \qquad x>0
+\end{equation}
+Parametry $b, k$ z~$\mu_X, \sigma_X$:
+\begin{align}
+    k^2 = \sigma_Y^2 = \ln\!\left[(v_X)^2 + 1\right], \qquad b = \mu_Y = \ln\mu_X - \tfrac{1}{2}\,\sigma_Y^2
+\end{align}
+
+\begin{table}[H]
+\centering
+\caption{Parametry vstupních náhodných veličin (log-normální rozdělení, $v_X = 0{,}1$).}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Veličina} & $\mu_X$ & $\sigma_X$ & $b = \mu_Y$ & $k = \sigma_Y$ \\
+\midrule
+$R_e$ [MPa]    & 500       & 50      & 6{,}210  & 0{,}0998 \\
+$M$ [N$\cdot$mm] & $1{,}0\E{5}$ & $1{,}0\E{4}$ & 11{,}508 & 0{,}0998 \\
+$E$ [MPa]      & $2{,}1\E{5}$ & $2{,}1\E{4}$ & 12{,}250 & 0{,}0998 \\
+$t$ [mm]       & 15        & 1{,}5   & 2{,}703  & 0{,}0998 \\
+$h_1$ [mm]     & 45        & 4{,}5   & 3{,}802  & 0{,}0998 \\
+$h_2$ [mm]     & 30        & 3{,}0   & 3{,}396  & 0{,}0998 \\
+$h_3$ [mm]     & 10        & 1{,}0   & 2{,}298  & 0{,}0998 \\
+$L_1$ [mm]     & 60        & 6{,}0   & 4{,}089  & 0{,}0998 \\
+$L_2$ [mm]     & 60        & 6{,}0   & 4{,}089  & 0{,}0998 \\
+$L_3$ [mm]     & 60        & 6{,}0   & 4{,}089  & 0{,}0998 \\
+$K_{t1}$ [--]  & 1{,}83    & 0{,}183 & 0{,}599  & 0{,}0998 \\
+$K_{t2}$ [--]  & 1{,}18    & 0{,}118 & 0{,}161  & 0{,}0998 \\
+$w_{\max}$ [mm] & 2        & 0{,}2   & 0{,}688  & 0{,}0998 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Simulace metodou Monte Carlo s~$N = 500\,000$ realizací. Pro každý vzorek se vypočte $\sigma_{\max}$ (rovnice~\eqref{eq:sigmax}) a~průhyb~$w$.
+
+\subsubsection{Rezerva spolehlivosti a~pravděpodobnost poruchy}
+
+Pro každý mezní stav (MS) je definována \textbf{rezerva spolehlivosti}~$g$ jako rozdíl odolnosti~$R$ a~zatížení~$S$. Porucha nastává pro $g \le 0$:
+\begin{equation}
+    g_1 = R_e - \sigma_{\max}, \qquad g_2 = w_{\max} - w.
+\end{equation}
+Pravděpodobnost poruchy a~index spolehlivosti:
+\begin{equation}
+    P_f = P(g \le 0), \qquad \beta = -\Phi^{-1}(P_f),
+\end{equation}
+kde $\Phi$ je distribuční funkce normovaného normálního rozdělení. Hodnoty $P_f$ a~$\beta$ byly stanoveny z~MC simulace.
+
+\paragraph{MS pružnosti.}
+\begin{align}
+    P_{f,1} &= P(\sigma_{\max} > R_e) = \boxed{43{,}4\,\%} \\
+    \beta_1 &= -\Phi^{-1}(P_{f,1}) \approx 0{,}17
+\end{align}
+Deterministicky $\sigma_{\max} = 472\unit{MPa}$ leží těsně pod $R_e = 500\unit{MPa}$, ale velký rozptyl odezvy ($\mu_{\sigma_{\max}} \approx 491\unit{MPa}$, $\sigma_{\sigma_{\max}} \approx 132\unit{MPa}$) vede k~vysoké pravděpodobnosti poruchy. \textbf{Součást nevyhovuje.}
+
+\paragraph{MS deformace.}
+\begin{align}
+    P_{f,2} &= P(w > w_{\max}) \approx \boxed{0{,}94\,\%} \\
+    \beta_2 &= -\Phi^{-1}(P_{f,2}) \approx 2{,}35
+\end{align}
+MS deformace s~rezervou vyhovuje ($\mu_w \approx 0{,}87\unit{mm}$, $\sigma_w \approx 0{,}33\unit{mm}$).
+
+\subsection{Citlivostní analýza}
+
+\begin{table}[H]
+\centering
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\caption{Faktory důležitosti pro MS pružnosti ($g_1 = R_e - \sigma_{\max}$)}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Veličina} & $\boldsymbol{\rho}(g_1, X_i)$ & $\boldsymbol{\alpha_i^2}$ [\%] \\
+\midrule
+$h_3$      & $+0{,}685$ & \textbf{49{,}1} \\
+$R_e$      & $+0{,}354$ & 13{,}1 \\
+$M$        & $-0{,}350$ & 12{,}8 \\
+$K_{t2}$   & $-0{,}347$ & 12{,}6 \\
+$t$        & $+0{,}343$ & 12{,}3 \\
+$E$        & $+0{,}001$ & $\approx 0$ \\
+$h_1$      & $+0{,}003$ & $\approx 0$ \\
+$h_2$      & $+0{,}002$ & $\approx 0$ \\
+$L_1$      & $-0{,}001$ & $\approx 0$ \\
+$L_2$      & $-0{,}000$ & $\approx 0$ \\
+$L_3$      & $+0{,}002$ & $\approx 0$ \\
+$K_{t1}$   & $+0{,}001$ & $\approx 0$ \\
+$w_{\max}$ & $-0{,}002$ & $\approx 0$ \\
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\caption{Faktory důležitosti pro MS deformace ($g_2 = w_{\max} - w$)}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Veličina} & $\boldsymbol{\rho}(g_2, X_i)$ & $\boldsymbol{\alpha_i^2}$ [\%] \\
+\midrule
+$h_3$      & $+0{,}576$ & \textbf{35{,}5} \\
+$w_{\max}$ & $+0{,}525$ & 29{,}4 \\
+$L_3$      & $-0{,}411$ & 18{,}0 \\
+$M$        & $-0{,}227$ & 5{,}5 \\
+$E$        & $+0{,}227$ & 5{,}5 \\
+$t$        & $+0{,}224$ & 5{,}3 \\
+$h_2$      & $+0{,}065$ & 0{,}5 \\
+$h_1$      & $+0{,}033$ & 0{,}1 \\
+$L_2$      & $-0{,}037$ & 0{,}1 \\
+$L_1$      & $-0{,}015$ & $\approx 0$ \\
+$R_e$      & $-0{,}002$ & $\approx 0$ \\
+$K_{t1}$   & $+0{,}001$ & $\approx 0$ \\
+$K_{t2}$   & $+0{,}003$ & $\approx 0$ \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table}
+
+\noindent\textbf{Závěr citlivostní analýzy:} Pro MS pružnosti dominuje výška kritického průřezu $h_3$ (49\,\%, závislost $\sigma = 6M/(t\,h^2)$); zbylé čtyři aktivní veličiny $R_e, M, K_{t2}, t$ přispívají rovnoměrně ($\sim 12$--$13\,\%$). Pro MS deformace je profil odlišný -- dominují $h_3$ (35{,}5\,\% přes $I_3 = t\,h_3^3/12$), $w_{\max}$ (29{,}4\,\%) a~$L_3$ (18\,\%); pevnostní veličiny ($R_e, K_{t1}, K_{t2}$) na~průhyb nemají vliv.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{p4_priklad_4E_vysledky.png}
+\caption{Histogramy odezvy z~MC simulace.}
+\label{fig:4E}
+\end{figure}
+
+\clearpage
+\subsection{Závěr}
+
+Stochastickou analýzou metodou Monte Carlo bylo zjištěno, že posuzovaná součást \textbf{nevyhovuje meznímu stavu pružnosti} ($P_{f,1} = 43{,}4\,\%$, $\beta_1 = 0{,}17$). Přestože nominální napětí ve~vrubu $r_2$ leží těsně pod mezí kluzu ($\sigma_{\max} = 472\unit{MPa} < R_e = 500\unit{MPa}$, $k_{\sigma} = 1{,}06$), výrazný rozptyl odezvy způsobuje, že téměř v~polovině realizací dojde k~překročení $R_e$. Mezní stav deformace naopak \textbf{vyhovuje} s~rezervou ($P_{f,2} = 0{,}94\,\%$, $\beta_2 = 2{,}35$).
+
+Citlivostní analýza prokázala, že rozhodující veličinou je v~obou mezních stavech výška kritického průřezu $h_3$ (49\,\% pro pružnost, 36\,\% pro deformaci). Pro zvýšení spolehlivosti je proto nejúčinnější \textbf{zvětšit $h_3$ nebo zpřísnit jeho výrobní toleranci}, případně zvětšit poloměr vrubu $r_2$.
+

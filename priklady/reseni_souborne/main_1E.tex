@@ -1,0 +1,51 @@
+\documentclass[a4paper,11pt]{article}
+
+% Kódování a jazyk
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[czech]{babel}
+\usepackage{lmodern}
+
+% Matematika
+\usepackage{amsmath,amssymb,amsfonts}
+
+% Grafika a layout
+\usepackage{graphicx}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!60!black
+}
+
+\graphicspath{{1E/}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Spolehlivost konstrukcí -- Úloha 1E}
+\fancyhead[R]{\small Akademický rok 2025/2026}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\unit}[1]{\,\mathrm{#1}}
+\newcommand{\E}[1]{\times 10^{#1}}
+
+\captionsetup{font=small}
+
+\begin{document}
+
+\input{1E/priklad_1E.tex}
+
+\end{document}
